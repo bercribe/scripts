@@ -81,10 +81,19 @@ def process_database_pages(pages):
     for page in pages:
         item_title = page["properties"]["Name"]["title"][0]["plain_text"]
         item_type = page["properties"]["Type"]["select"]["name"]
+        has_cover = page["properties"]["Has cover art"]["checkbox"]
 
         # Skip processing if the item already has a cover image
         if "cover" in page and page["cover"] != None and page["cover"]["type"] != "empty":
             print(f"Skipping {item_title} ({item_type}): Cover image already exists")
+            notion.pages.update(
+                page["id"],
+                properties={
+                    "Has cover art": {
+                        "checkbox": True
+                    }
+                }
+            )
             continue
 
         # Get the cover image URL based on the item type
@@ -109,6 +118,11 @@ def process_database_pages(pages):
                     "external": {
                         "url": cover_image_url
                     }
+                },
+                properties={
+                    "Has cover art": {
+                        "checkbox": True
+                    }
                 }
             )
             print(f"Updated cover image for {item_title} ({item_type})")
@@ -116,8 +130,15 @@ def process_database_pages(pages):
             print(f"Couldn't find cover image for {item_title} ({item_type})")
 
 
+filter = {
+    "property": "Has cover art",
+    "checkbox": {
+        "equals": False
+    }
+}
+
 # Fetch the first set of pages from the Notion database
-response = notion.databases.query(DATABASE_URL_OR_ID)
+response = notion.databases.query(DATABASE_URL_OR_ID, filter=filter)
 pages = response.get("results")
 
 # Process the first set of pages
@@ -125,7 +146,7 @@ process_database_pages(pages)
 
 # Iterate through the remaining pages (if any) using pagination
 while "next_cursor" in response and response["next_cursor"]:
-    response = notion.databases.query(DATABASE_URL_OR_ID, start_cursor=response["next_cursor"])
+    response = notion.databases.query(DATABASE_URL_OR_ID, filter=filter, start_cursor=response["next_cursor"])
     pages = response.get("results")
     process_database_pages(pages)
 print("Done!")
