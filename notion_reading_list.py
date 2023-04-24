@@ -128,3 +128,4 @@ while "next_cursor" in response and response["next_cursor"]:
     response = notion.databases.query(DATABASE_URL_OR_ID, start_cursor=response["next_cursor"])
     pages = response.get("results")
     process_database_pages(pages)
+print("Done!")
