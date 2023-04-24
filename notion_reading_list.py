@@ -58,6 +58,11 @@ def get_bgg_cover_image(game_name):
         return None
 
     search_tree = ET.fromstring(search_response.content)
+    item = search_tree.find("item")
+    if item == None:
+        print(f"Error fetching BGG data for '{game_name}': Couldn't find item")
+        return None
+
     game_id = search_tree.find("item").get("id")
 
     game_url = f"https://www.boardgamegeek.com/xmlapi2/thing?id={game_id}"
