@@ -1,6 +1,7 @@
 import os
 from notion_client import Client
 import requests
+import xml.etree.ElementTree as ET
 
 # Initialize Notion API client
 notion = Client(auth="secret_buI5NHNMsXGVWo7RxYNSEVjNfVqeSGdzfp31uW0mXM9")
@@ -48,6 +49,29 @@ def get_openlibrary_cover_image(query):
         print(f"Error parsing Open Library API JSON response: {e}")
     return None
 
+def get_bgg_cover_image(game_name):
+    search_url = f"https://www.boardgamegeek.com/xmlapi2/search?query={game_name}&type=boardgame"
+    search_response = requests.get(search_url)
+
+    if search_response.status_code != 200:
+        print(f"Error fetching BGG data for '{game_name}': {search_response.status_code}")
+        return None
+
+    search_tree = ET.fromstring(search_response.content)
+    game_id = search_tree.find("item").get("id")
+
+    game_url = f"https://www.boardgamegeek.com/xmlapi2/thing?id={game_id}"
+    game_response = requests.get(game_url)
+
+    if game_response.status_code != 200:
+        print(f"Error fetching BGG data for '{game_name}' with ID {game_id}: {game_response.status_code}")
+        return None
+
+    game_tree = ET.fromstring(game_response.content)
+    image_url = game_tree.find("item/image").text
+
+    return image_url
+
 def process_database_pages(pages):
     for page in pages:
         item_title = page["properties"]["Name"]["title"][0]["plain_text"]
@@ -62,8 +86,10 @@ def process_database_pages(pages):
         if item_type == "Film" or item_type == "TV Series":
             media_type = "movie" if item_type == "Film" else "tv"
             cover_image_url = get_tmdb_cover_image(item_title, media_type)
-        elif item_type == "Game":
+        elif item_type == "Video Game":
             cover_image_url = get_rawg_cover_image(item_title)
+        elif item_type == "Tabletop Game":
+            cover_image_url = get_bgg_cover_image(item_title)
         elif item_type == "Book" or item_type == "Theatre":
             cover_image_url = get_openlibrary_cover_image(item_title)
         else:
