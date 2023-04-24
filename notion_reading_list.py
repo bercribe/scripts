@@ -16,27 +16,36 @@ DATABASE_URL_OR_ID = "c24451503c5e4d449354cb7ae58e3f55"
 def get_tmdb_cover_image(query, media_type):
     search_url = f"https://api.themoviedb.org/3/search/{media_type}?api_key={TMDB_API_KEY}&query={query}"
     response = requests.get(search_url)
-    results = response.json()["results"]
-    if results:
-        return f"https://image.tmdb.org/t/p/original{results[0]['poster_path']}"
+    try:
+        results = response.json()["results"]
+        if results:
+            return f"https://image.tmdb.org/t/p/original{results[0]['poster_path']}"
+    except Exception as e:
+        print(f"Error parsing TMDb API JSON response: {e}")
     return None
 
 # Function to search for a game using RAWG API and return the cover image URL
 def get_rawg_cover_image(query):
     search_url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}"
     response = requests.get(search_url)
-    results = response.json()["results"]
-    if results:
-        return results[0]["background_image"]
+    try:
+        results = response.json()["results"]
+        if results:
+            return results[0]["background_image"]
+    except Exception as e:
+        print(f"Error parsing RAWG API JSON response: {e}")
     return None
 
 # Function to search for a book using Open Library API and return the cover image URL
 def get_openlibrary_cover_image(query):
     search_url = f"https://openlibrary.org/search.json?q={query}"
     response = requests.get(search_url)
-    results = response.json()["docs"]
-    if results:
-        return f"https://covers.openlibrary.org/b/olid/{results[0]['cover_edition_key']}-L.jpg"
+    try:
+        results = response.json()["docs"]
+        if results:
+            return f"https://covers.openlibrary.org/b/olid/{results[0]['cover_edition_key']}-L.jpg"
+    except Exception as e:
+        print(f"Error parsing Open Library API JSON response: {e}")
     return None
 
 # Iterate through each page in the Notion database
@@ -55,7 +64,7 @@ for page in notion.databases.query(DATABASE_URL_OR_ID).get("results"):
         cover_image_url = get_tmdb_cover_image(item_title, media_type)
     elif item_type == "Game":
         cover_image_url = get_rawg_cover_image(item_title)
-    elif item_type == "Book":
+    elif item_type == "Book" or item_type == "Theatre":
         cover_image_url = get_openlibrary_cover_image(item_title)
     else:
         cover_image_url = None
