@@ -48,38 +48,52 @@ def get_openlibrary_cover_image(query):
         print(f"Error parsing Open Library API JSON response: {e}")
     return None
 
-# Iterate through each page in the Notion database
-for page in notion.databases.query(DATABASE_URL_OR_ID).get("results"):
-    item_title = page["properties"]["Name"]["title"][0]["plain_text"]
-    item_type = page["properties"]["Type"]["select"]["name"]
+def process_database_pages(pages):
+    for page in pages:
+        item_title = page["properties"]["Name"]["title"][0]["plain_text"]
+        item_type = page["properties"]["Type"]["select"]["name"]
 
-    # Skip processing if the item already has a cover image
-    if "cover" in page and page["cover"] != None and page["cover"]["type"] != "empty":
-        print(f"Skipping {item_title} ({item_type}): Cover image already exists")
-        continue
+        # Skip processing if the item already has a cover image
+        if "cover" in page and page["cover"] != None and page["cover"]["type"] != "empty":
+            print(f"Skipping {item_title} ({item_type}): Cover image already exists")
+            continue
 
-    # Get the cover image URL based on the item type
-    if item_type == "Film" or item_type == "TV Series":
-        media_type = "movie" if item_type == "Film" else "tv"
-        cover_image_url = get_tmdb_cover_image(item_title, media_type)
-    elif item_type == "Game":
-        cover_image_url = get_rawg_cover_image(item_title)
-    elif item_type == "Book" or item_type == "Theatre":
-        cover_image_url = get_openlibrary_cover_image(item_title)
-    else:
-        cover_image_url = None
+        # Get the cover image URL based on the item type
+        if item_type == "Film" or item_type == "TV Series":
+            media_type = "movie" if item_type == "Film" else "tv"
+            cover_image_url = get_tmdb_cover_image(item_title, media_type)
+        elif item_type == "Game":
+            cover_image_url = get_rawg_cover_image(item_title)
+        elif item_type == "Book" or item_type == "Theatre":
+            cover_image_url = get_openlibrary_cover_image(item_title)
+        else:
+            cover_image_url = None
 
-    if cover_image_url:
-        # Update the Notion page's cover image
-        notion.pages.update(
-            page["id"],
-            cover={
-                "type": "external",
-                "external": {
-                    "url": cover_image_url
+        if cover_image_url:
+            # Update the Notion page's cover image
+            notion.pages.update(
+                page["id"],
+                cover={
+                    "type": "external",
+                    "external": {
+                        "url": cover_image_url
+                    }
                 }
-            }
-        )
-        print(f"Updated cover image for {item_title} ({item_type})")
-    else:
-        print(f"Couldn't find cover image for {item_title} ({item_type})")
+            )
+            print(f"Updated cover image for {item_title} ({item_type})")
+        else:
+            print(f"Couldn't find cover image for {item_title} ({item_type})")
+
+
+# Fetch the first set of pages from the Notion database
+response = notion.databases.query(DATABASE_URL_OR_ID)
+pages = response.get("results")
+
+# Process the first set of pages
+process_database_pages(pages)
+
+# Iterate through the remaining pages (if any) using pagination
+while "next_cursor" in response and response["next_cursor"]:
+    response = notion.databases.query(DATABASE_URL_OR_ID, start_cursor=response["next_cursor"])
+    pages = response.get("results")
+    process_database_pages(pages)
