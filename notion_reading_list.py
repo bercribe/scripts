@@ -84,17 +84,17 @@ def process_database_pages(pages):
         has_cover = page["properties"]["Has cover art"]["checkbox"]
 
         # Skip processing if the item already has a cover image
-        if "cover" in page and page["cover"] != None and page["cover"]["type"] != "empty":
-            print(f"Skipping {item_title} ({item_type}): Cover image already exists")
-            notion.pages.update(
-                page["id"],
-                properties={
-                    "Has cover art": {
-                        "checkbox": True
-                    }
-                }
-            )
-            continue
+        # if "cover" in page and page["cover"] != None and page["cover"]["type"] != "empty":
+        #     print(f"Skipping {item_title} ({item_type}): Cover image already exists")
+        #     notion.pages.update(
+        #         page["id"],
+        #         properties={
+        #             "Has cover art": {
+        #                 "checkbox": True
+        #             }
+        #         }
+        #     )
+        #     continue
 
         # Get the cover image URL based on the item type
         if item_type == "Film" or item_type == "TV Series":
