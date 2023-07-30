@@ -50,7 +50,7 @@ def convert_links():
             else:
                 print(f'Unresolved link part: {part}')
                 new_link_path_parts.append(part)  # leave unrecognized parts unchanged
-        new_link_url = quote('/'.join(new_link_path_parts), safe='/')
+        new_link_url = quote('/'.join(new_link_path_parts), safe='/&:')
         return f'[{link_text}]({new_link_url})'
     return replacer
 
@@ -86,6 +86,6 @@ for root, dirs, files in os.walk(notion_dir, topdown=False):
         if file.endswith('.md'):
             with open(os.path.join(root, file), 'r') as f:
                 content = f.read()
-            content = re.sub(r'\[([^\]]+?)\]\((.*?)(?=\)\s|$)\)', convert_links(), content)
+            content = re.sub(r'\[([^\]]+?)\]\((.*?)(?=\)(?:\s|$))\)', convert_links(), content)
             with open(os.path.join(root, file), 'w') as f:
                 f.write(content)
