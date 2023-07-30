@@ -1,3 +1,4 @@
+import time
 import os
 import re
 from collections import defaultdict
@@ -59,12 +60,24 @@ for root, dirs, files in os.walk(notion_dir, topdown=False):
     for file in files:
         if file.endswith('.md'):
             new_file_name = rename(file, root, path_map_files, is_file=True)
-            os.rename(os.path.join(root, file), os.path.join(root, new_file_name + '.md'))
+            for i in range(3):  # Number of retries
+                try:
+                    os.rename(os.path.join(root, file), os.path.join(root, new_file_name + '.md'))
+                    break
+                except PermissionError as e:
+                    print(f'PermissionError encountered for file {file}. Retry {i+1}/3')
+                    time.sleep(1)  # Wait for 1 second before retrying
 
     # Renaming directories
     for name in dirs:
         new_name = rename(name, root, path_map_dirs)
-        os.rename(os.path.join(root, name), os.path.join(root, new_name))
+        for i in range(3):  # Number of retries
+            try:
+                os.rename(os.path.join(root, name), os.path.join(root, new_name))
+                break
+            except PermissionError as e:
+                print(f'PermissionError encountered for directory {name}. Retry {i+1}/3')
+                time.sleep(1)  # Wait for 1 second before retrying
 
 # Second pass: update file contents
 for root, dirs, files in os.walk(notion_dir, topdown=False):
