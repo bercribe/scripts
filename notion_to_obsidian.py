@@ -86,6 +86,6 @@ for root, dirs, files in os.walk(notion_dir, topdown=False):
         if file.endswith('.md'):
             with open(os.path.join(root, file), 'r') as f:
                 content = f.read()
-            content = re.sub(r'\[([^\]]+?)\]\((.*?)(?=\)(?:\s|$))\)', convert_links(), content)
+            content = re.sub(r'\[([^\[|\]]*?)\]\((\S+)\)', convert_links(), content)
             with open(os.path.join(root, file), 'w') as f:
                 f.write(content)
