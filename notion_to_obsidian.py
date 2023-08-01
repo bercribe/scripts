@@ -37,7 +37,7 @@ def convert_links():
     def replacer(match):
         link_text, link_url = match.groups()
         # Skip web links
-        if link_url.startswith('http') or link_url.startswith('https'):
+        if link_url.startswith('http://') or link_url.startswith('https://'):
             return match.group(0)
         # Convert %20 back to space
         link_path_parts = unquote(link_url).split('/')
@@ -50,9 +50,22 @@ def convert_links():
             else:
                 print(f'Unresolved link part: {part}')
                 new_link_path_parts.append(part)  # leave unrecognized parts unchanged
-        new_link_url = quote('/'.join(new_link_path_parts), safe='/&:')
+        new_link_url = quote('/'.join(new_link_path_parts), safe='/&:,')
         return f'[{link_text}]({new_link_url})'
     return replacer
+
+def convert_metadata(content):
+    lines = content.split("\n")
+    start_index = 2
+    end_index = start_index
+    for line in lines[start_index:]:
+        if ":" in line:
+            end_index += 1
+        else:
+            break
+    converted_lines = ["---"] + lines[start_index:end_index] + ["---"] + lines[:start_index] + lines[end_index:]
+    content = "\n".join(converted_lines)
+    return content
 
 # Process through the directory
 for root, dirs, files in os.walk(notion_dir, topdown=False):
@@ -86,6 +99,7 @@ for root, dirs, files in os.walk(notion_dir, topdown=False):
         if file.endswith('.md'):
             with open(os.path.join(root, file), 'r') as f:
                 content = f.read()
-            content = re.sub(r'\[([^\[|\]]*?)\]\((\S+)\)', convert_links(), content)
+            content = convert_metadata(content)
+            content = re.sub(r'\[([^\n]*)\]\((\S+)\)', convert_links(), content)
             with open(os.path.join(root, file), 'w') as f:
                 f.write(content)
