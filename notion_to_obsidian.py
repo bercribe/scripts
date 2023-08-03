@@ -5,6 +5,7 @@ from collections import defaultdict
 from urllib.parse import unquote, quote
 import zipfile
 import csv
+from dateutil.parser import parse
 
 # Set the directory of your Notion markdown files
 notion_dir = '/home/mawz/documents/external brain/export'
@@ -88,6 +89,39 @@ def convert_links():
         return f'[{link_text}]({new_link_url})'
     return replacer
 
+def is_date(string):
+    date_pattern = r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b \d{1,2}, \d{4}( \d{1,2}:\d{2} (?:AM|PM))?'
+    full_pattern = r'^{0}( → {0})?$'.format(date_pattern)
+
+    return bool(re.match(full_pattern, string))
+
+def convert_to_iso8601(date_str):
+    include_time = False
+    # Check for time indicators (AM/PM or colon)
+    if "AM" in date_str or "PM" in date_str or ":" in date_str:
+        include_time = True
+    if "→" in date_str:
+        start_date, end_date = date_str.split("→")
+        start_date = parse(start_date.strip())
+        end_date = parse(end_date.strip())
+        if include_time:
+            return start_date.isoformat() + " → " + end_date.isoformat()
+        else:
+            return start_date.date().isoformat() + " → " + end_date.date().isoformat()
+    else:
+        date = parse(date_str.strip())
+        return date.isoformat() if include_time else date.date().isoformat()
+
+def is_bool(string):
+    return string == "Yes" or string == "No"
+
+def convert_to_bool(string):
+    if string == "Yes":
+        return "true"
+    elif string == "No":
+        return "false"
+    return string
+
 def convert_metadata(content, file_name):
     if content[0] != '#':
         return content
@@ -99,10 +133,18 @@ def convert_metadata(content, file_name):
             end_index += 1
         else:
             break
+
     converted_lines = []
     if start_index != end_index:
         converted_lines.append("---")
-        converted_lines.extend(lines[start_index:end_index])
+        for line in lines[start_index:end_index]:
+            key, value = line.split(":", 1)
+            value = value.strip()
+            if is_date(value):
+                line = f'{key}: {convert_to_iso8601(value)}'
+            elif is_bool(value):
+                line = f'{key}: {convert_to_bool(value)}'
+            converted_lines.append(line)
         converted_lines.append("---")
     if lines[0] != f'# {file_name.removesuffix(".md")}':
         converted_lines.extend(lines[:start_index])
