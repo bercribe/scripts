@@ -167,6 +167,20 @@ def convert_asides(content):
         converted_lines.append(line)
     return "\n".join(converted_lines)
 
+def convert_dates_to_links(note_content):
+    def replacer(match):
+        date_str = match.group()
+        date = parse(date_str)
+        return f'[[{date.date().isoformat()}|{date_str}]]'
+
+    # Define a regex pattern for matching typical date formats
+    date_pattern = r'\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},\s+\d{4}\b'
+
+    # Replace all occurrences of dates with Obsidian links
+    converted_content = re.sub(date_pattern, replacer, note_content)
+
+    return converted_content
+
 # Process through the directory
 for root, dirs, files in os.walk(notion_dir, topdown=False):
     # Renaming files
@@ -207,5 +221,6 @@ for root, dirs, files in os.walk(notion_dir):
             content = re.sub(r'\[([^\n]*)\]\((\S+)\)', convert_links(), content)
             content = convert_metadata(content, file)
             content = convert_asides(content)
+            content = convert_dates_to_links(content)
             with open(os.path.join(root, file), 'w') as f:
                 f.write(content)
