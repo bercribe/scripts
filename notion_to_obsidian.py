@@ -56,6 +56,7 @@ def convert_database(file, root):
     query = '```dataview\n'
     query += 'table ' + ', '.join(headers) + '\n'
     query += f'from "{dataview_path}"\n'
+    query += f'where file.folder = "{dataview_path}"\n'
     query += '```\n'
 
     extension = file.removeprefix(data_folder_name).removesuffix('.csv') + '.md'
@@ -106,8 +107,23 @@ def convert_metadata(content, file_name):
     if lines[0] != f'# {file_name.removesuffix(".md")}':
         converted_lines.extend(lines[:start_index])
     converted_lines.extend(lines[end_index:])
-    content = "\n".join(converted_lines)
-    return content
+    return "\n".join(converted_lines)
+
+def convert_asides(content):
+    lines = content.split("\n")
+    converted_lines = []
+    in_aside = False
+    for line in lines:
+        if line == "<aside>":
+            in_aside = True
+            line = ">[!aside]"
+        elif line == "</aside>":
+            in_aside = False
+            line = ""
+        elif in_aside:
+            line = f'>{line}'
+        converted_lines.append(line)
+    return "\n".join(converted_lines)
 
 # Process through the directory
 for root, dirs, files in os.walk(notion_dir, topdown=False):
@@ -146,7 +162,8 @@ for root, dirs, files in os.walk(notion_dir):
         if file.endswith('.md'):
             with open(os.path.join(root, file), 'r') as f:
                 content = f.read()
-            content = convert_metadata(content, file)
             content = re.sub(r'\[([^\n]*)\]\((\S+)\)', convert_links(), content)
+            content = convert_metadata(content, file)
+            content = convert_asides(content)
             with open(os.path.join(root, file), 'w') as f:
                 f.write(content)
