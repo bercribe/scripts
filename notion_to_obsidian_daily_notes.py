@@ -1,14 +1,14 @@
 import os
 import re
 
-def modify_journal_entries_in_place(notion_folder_path):
+def modify_journal_entries_in_place(notion_folder_path, excluded_files):
     # Define patterns
     metadata_start_pattern = r'^---$'
     date_pattern = r'^Date:\s*(\d{4}-\d{2}-\d{2})$'
     title_pattern = r'^#\s*(.*)$'
 
     # Iterate through Notion files
-    for filename in os.listdir(notion_folder_path, excluded_files):
+    for filename in os.listdir(notion_folder_path):
         if filename in excluded_files:
             continue
 
@@ -57,4 +57,4 @@ def modify_journal_entries_in_place(notion_folder_path):
             new_filepath = os.path.join(notion_folder_path, new_filename)
             os.rename(filepath, new_filepath)
 
-modify_journal_entries_in_place('/home/mawz/documents/external brain/Daily Journal', ["Seattle", "Daily Entry.md", "Gratuity Daily Entry.md", "TheMe System Daily Entry.md", "Untitled.md"])
+modify_journal_entries_in_place('/mnt/d/personal cloud/external brain/Daily Journal', ["Seattle", "Daily Entry.md", "Gratuity Daily Entry.md", "TheMe System Daily Entry.md", "Untitled.md"])

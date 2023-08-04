@@ -8,8 +8,8 @@ import csv
 from dateutil.parser import parse
 
 # Set the directory of your Notion markdown files
-notion_dir = '/home/mawz/documents/external brain/export'
-with zipfile.ZipFile('/home/mawz/documents/external brain/export.zip', 'r') as zip_ref:
+notion_dir = '/mnt/d/personal cloud/external brain/export'
+with zipfile.ZipFile('/mnt/d/personal cloud/external brain/export.zip', 'r') as zip_ref:
     zip_ref.extractall(notion_dir)
 
 # Store a map of old path to new path for files and directories separately
