@@ -63,7 +63,7 @@ def get_and_update_metadata(directory_path, api_key, cx):
                                 file.write(content[end_metadata_index:])
                             
                             i += 1
-                            if i >= 5000:
+                            if i >= 1000:
                                 break
     print(f'{i} entries updated')
 
