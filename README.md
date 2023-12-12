@@ -18,3 +18,9 @@ pip install requests
 pip install pyyaml
 python reading_list_urls.py
 ```
+
+### sfin2ledger.py
+Fetches recent transactions and saves them to a ledger. To run:
+```
+python3 sfin2ledger.py
+```
