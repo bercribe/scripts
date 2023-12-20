@@ -1,8 +1,14 @@
+# based on:
+# https://beta-bridge.simplefin.org/info/developers
+# https://github.com/simplefin/sfin2ledger/blob/master/sfin2ledger.py
+# https://github.com/avirut/bursar/blob/master/src/update.py
+
 import requests
 import base64
 from datetime import datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
+import json
 
 # 1. Get a Setup Token
 setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
@@ -16,7 +22,7 @@ def claimAccessToken():
 access_url = "https://36C0AB5239276B8157BC30B0AD96F38AF9B7CBC5FC0AF5B1BFAAA6BA5AB4BBEC:4EE0F6998491013B2F394F1818A0C6F3FD294857EC5889B096562735CC97DC20@beta-bridge.simplefin.org/simplefin"
 
 main_ledger = "main.ledger"
-ledger_prefix = "sfin_"
+ledger_prefix = "sfin"
 days_to_fetch = 7
 
 def fetchSimplefin():
@@ -47,7 +53,7 @@ def simplefin2Ledger(data):
     entries = defaultdict(list)
     for trans in all_trans:
         posted = datetime.fromtimestamp(trans['posted'])
-        ledger_name = ledger_prefix + posted.strftime('%Y-%m') + ".ledger"
+        ledger_name = f"{ledger_prefix}_{posted.strftime('%Y-%m')}.ledger"
         entry = []
         posted_string = posted.strftime('%Y/%m/%d')
         entry.append('{0} {1}'.format(posted_string, trans['description']))
@@ -80,12 +86,15 @@ def simplefin2Ledger(data):
     return entries
 
 data = fetchSimplefin()
+with open(f"log_{datetime.today().strftime('%Y-%m-%d')}.json", 'a+') as log:
+    log.write(json.dumps(data, indent=4))
+
 ledger = simplefin2Ledger(data)
 with open (main_ledger, 'a+') as main:
     main.seek(0)
     main_contents = main.read()
     for ledger_name, ledger_contents in ledger.items():
-        include_text = "include " + ledger_name + "\n"
+        include_text = f"include {ledger_name}\n"
         if include_text not in main_contents:
             main.write(include_text)
         with open(ledger_name, 'a+') as file:
