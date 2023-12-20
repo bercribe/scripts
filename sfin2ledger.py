@@ -3,12 +3,17 @@
 # https://github.com/simplefin/sfin2ledger/blob/master/sfin2ledger.py
 # https://github.com/avirut/bursar/blob/master/src/update.py
 
+# simplefin spec: https://www.simplefin.org/protocol.html#transaction
+
 import requests
 import base64
 from datetime import datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
 import json
+
+def lookupAccount(account):
+    return f"Assets:{account['name']}"
 
 # 1. Get a Setup Token
 setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
@@ -60,13 +65,13 @@ def simplefin2Ledger(data):
         amount = Decimal(trans['amount'])
         approx_width = 40
 
+        account_name = lookupAccount(trans['account'])
         if amount > 0:
             # income
-            name = 'Assets:{0}'.format(trans['account']['name'])
             amount = '${0}'.format(abs(amount))
-            space = ' '*(approx_width-len(name)-len(amount))
-            entry.append('    {name}{space}{amount}'.format(
-                name=name,
+            space = ' '*(approx_width-len(account_name)-len(amount))
+            entry.append('    {account_name}{space}{amount}'.format(
+                account_name=account_name,
                 space=space,
                 amount=amount))
             entry.append('    Income:UNKNOWN')
@@ -79,16 +84,24 @@ def simplefin2Ledger(data):
                 name=name,
                 space=space,
                 amount=amount))
-            entry.append('    Assets:{0}'.format(trans['account']['name']))
+            entry.append('    {0}'.format(account_name))
         entry.append('')
         entry.append('')
         entries[ledger_name].append('\n'.join(entry))
     return entries
 
-data = fetchSimplefin()
-with open(f"log_{datetime.today().strftime('%Y-%m-%d')}.json", 'a+') as log:
-    log.write(json.dumps(data, indent=4))
+def getSimplefin():
+    log_name = f"log_{datetime.today().strftime('%Y-%m-%d')}.json"
+    try:
+        with open(log_name, "r") as log:
+            return json.loads(log.read())
+    except:
+        data = fetchSimplefin()
+        with open(log_name, 'a+') as log:
+            log.write(json.dumps(data, indent=4))
+        return data
 
+data = getSimplefin()
 ledger = simplefin2Ledger(data)
 with open (main_ledger, 'a+') as main:
     main.seek(0)
