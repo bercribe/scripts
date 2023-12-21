@@ -12,8 +12,15 @@ from decimal import Decimal
 from collections import defaultdict
 import json
 
+# TODO: implement these
 def lookupAccount(account):
-    return f"Assets:{account['name']}"
+    return f"Assets:UNKNOWN"
+
+def lookupIncome():
+    return "Income:UNKNOWN"
+
+def lookupExpense():
+    return "Expenses:UNKNOWN"
 
 # 1. Get a Setup Token
 setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
@@ -74,14 +81,14 @@ def simplefin2Ledger(data):
                 account_name=account_name,
                 space=space,
                 amount=amount))
-            entry.append('    Income:UNKNOWN')
+            entry.append(f'    {lookupIncome()}')
         else:
             # expense
-            name = 'Expenses:UNKNOWN'
+            expense_name = lookupExpense()
             amount = '${0}'.format(abs(amount))
-            space = ' '*(approx_width-len(name)-len(amount))
-            entry.append('    {name}{space}{amount}'.format(
-                name=name,
+            space = ' '*(approx_width-len(expense_name)-len(amount))
+            entry.append('    {expense_name}{space}{amount}'.format(
+                expense_name=expense_name,
                 space=space,
                 amount=amount))
             entry.append('    {0}'.format(account_name))
