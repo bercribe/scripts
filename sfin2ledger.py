@@ -23,10 +23,9 @@ FIDELITY_IRA = "Assets:Equity:FidelityIRA"
 GUIDELINE_401K = "Assets:Equity:Guideline401k"
 LMCU_CHECKING = "Assets:Saving:LMCU"
 PAYPAL_CRYPTO = "Assets:Crypto:Paypal"
-SEATTLE_CITY_LIGHT = "Expenses:Utilities:SeattleCityLight"
+SEATTLE_CITY_LIGHT = "Liabilities:Utilities:SeattleCityLight"
 VENMO_CASH = "Assets:Cash:Venmo"
 
-# TODO: implement these
 # account is a simplefin json object
 def lookupAccount(account):
     org_name = account["org"]["name"]
@@ -84,12 +83,56 @@ def lookupAccount(account):
 
     return f"Account:UNKNOWN:{org_name}:{account_name}"
 
+# TODO: implement these
 # account is a string, transaction is a simplefin json object
 def lookupIncome(account, transaction):
-    return "Income:UNKNOWN"
+    payee = transaction["payee"]
+    description = transaction["description"]
+
+    # these will be provided by the account making the payment
+    if account in [BOA_CARD, CAPITAL_ONE_CARD, CHASE_CARD, CITI_CARD, DISCOVER_CARD]:
+        if payee in ["Automatic Payment", "Bank of America Electronic Payment", "Capital One Credit Card", "Credit Card Payment"]:
+            return ""
+        if payee in ["Automatic Statement Credit"]:
+            return "Income:Refund:Cashback"
+    if account == SEATTLE_CITY_LIGHT and payee == "Payment":
+        return ""
+
+    if payee == "Anduril Industri":
+        return "Income:Salary:Anduril"
+    
+    if payee == "Electronic Arts":
+        return "Income:Salary:ElectronicArts"
+
+    if payee == "Dividend":
+        return "Income:Dividend"
+    
+    if payee == "Interest Income":
+        return "Income:Interest"
+
+    return f"Income:UNKNOWN:{payee}"
 
 def lookupExpense(account, transaction):
-    return "Expenses:UNKNOWN"
+    payee = transaction["payee"]
+    description = transaction["description"]
+
+    if payee == "Bank of America Credit Card":
+        return BOA_CARD
+    if payee == "Capital One Credit Card":
+        return CAPITAL_ONE_CARD
+    if payee == "Chase Credit Card":
+        return CHASE_CARD
+    if payee == "Citi Credit Card":
+        return CITI_CARD
+    if payee == "Discover Credit Card":
+        return DISCOVER_CARD
+    if payee == "Seattle City Light":
+        return SEATTLE_CITY_LIGHT
+
+    if payee == "Humble Bundle":
+        return "Expenses:Entertainment"
+
+    return f"Expenses:UNKNOWN:{payee}"
 
 # 1. Get a Setup Token
 setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
@@ -144,18 +187,23 @@ def simplefin2Ledger(data):
         account_name = lookupAccount(trans['account'])
         if amount > 0:
             # income
+            income_name = lookupIncome(account_name, trans)
+            if income_name == "":
+                continue
             amount = '${0}'.format(abs(amount))
-            space = ' '*(approx_width-len(account_name)-len(amount))
+            space = ' '*max(approx_width-len(account_name)-len(amount), 4)
             entry.append('    {account_name}{space}{amount}'.format(
                 account_name=account_name,
                 space=space,
                 amount=amount))
-            entry.append(f'    {lookupIncome(account_name, trans)}')
+            entry.append(f'    {income_name}')
         else:
             # expense
             expense_name = lookupExpense(account_name, trans)
+            if expense_name == "":
+                continue
             amount = '${0}'.format(abs(amount))
-            space = ' '*(approx_width-len(expense_name)-len(amount))
+            space = ' '*max(approx_width-len(expense_name)-len(amount), 4)
             entry.append('    {expense_name}{space}{amount}'.format(
                 expense_name=expense_name,
                 space=space,
