@@ -12,14 +12,83 @@ from decimal import Decimal
 from collections import defaultdict
 import json
 
-# TODO: implement these
-def lookupAccount(account):
-    return f"Assets:UNKNOWN"
+BECU_CHECKING = "Assets:JointChecking:BECU"
+BOA_CARD = "Liabilities:CreditCard:BankOfAmerica"
+CAPITAL_ONE_CARD = "Liabilities:JointCreditCard:CapitalOne"
+CHASE_CARD = "Liabilities:CreditCard:Chase"
+CITI_CARD = "Liabilities:JointCreditCard:Citi"
+DISCOVER_CARD = "Liabilities:CreditCard:Discover"
+FIDELITY_BROKERAGE = "Assets:Equity:FidelityBrokerage"
+FIDELITY_IRA = "Assets:Equity:FidelityIRA"
+GUIDELINE_401K = "Assets:Equity:Guideline401k"
+LMCU_CHECKING = "Assets:Saving:LMCU"
+PAYPAL_CRYPTO = "Assets:Crypto:Paypal"
+SEATTLE_CITY_LIGHT = "Expenses:Utilities:SeattleCityLight"
+VENMO_CASH = "Assets:Cash:Venmo"
 
-def lookupIncome():
+# TODO: implement these
+# account is a simplefin json object
+def lookupAccount(account):
+    org_name = account["org"]["name"]
+    account_name = account["name"]
+    
+    if org_name == "Bank of America":
+        if account_name == "Alumni Association of the University of Michigan Visa Signature - 2799":
+            return BOA_CARD
+
+    if org_name == "Boeing Employee Credit Union":
+        if account_name == "Checking":
+            return BECU_CHECKING
+
+    if org_name == "Capital One":
+        if account_name == "Quicksilver":
+            return CAPITAL_ONE_CARD
+
+    if org_name == "Chase Bank":
+        if account_name == "CREDIT CARD":
+            return CHASE_CARD
+
+    if org_name == "Citibank":
+        if account_name == "Costco Anywhere Visa\u00ae\u00a0Card by Citi-0276":
+            return CITI_CARD
+
+    if org_name == "Discover Credit Card":
+        if account_name == "Discover it Card":
+            return DISCOVER_CARD
+
+    if org_name == "Fidelity Investments":
+        if account_name == "Individual":
+            return FIDELITY_BROKERAGE
+        if account_name == "ROTH IRA":
+            return FIDELITY_IRA
+        
+    if org_name == "Guideline":
+        if account_name == "Anduril Industries Inc":
+            return GUIDELINE_401K
+
+    if org_name == "Lake Michigan CU":
+        if account_name == "MAX CHECKING":
+            return LMCU_CHECKING
+
+    if org_name == "Paypal":
+        if account_name == "Crypto":
+            return PAYPAL_CRYPTO
+
+    if org_name == "Seattle City Light":
+        if account_name == "Bill 5905":
+            return SEATTLE_CITY_LIGHT
+
+    if org_name == "Venmo":
+        if account_name == "Matoska-Waltz":
+            return VENMO_CASH
+
+    return f"Account:UNKNOWN:{org_name}:{account_name}"
+
+# account is a string, transaction is a simplefin json object
+def lookupIncome(account, transaction):
     return "Income:UNKNOWN"
 
-def lookupExpense():
+def lookupExpense(account, transaction):
     return "Expenses:UNKNOWN"
 
 # 1. Get a Setup Token
@@ -81,10 +150,10 @@ def simplefin2Ledger(data):
                 account_name=account_name,
                 space=space,
                 amount=amount))
-            entry.append(f'    {lookupIncome()}')
+            entry.append(f'    {lookupIncome(account_name, trans)}')
         else:
             # expense
-            expense_name = lookupExpense()
+            expense_name = lookupExpense(account_name, trans)
             amount = '${0}'.format(abs(amount))
             space = ' '*(approx_width-len(expense_name)-len(amount))
             entry.append('    {expense_name}{space}{amount}'.format(
@@ -123,3 +192,4 @@ with open (main_ledger, 'a+') as main:
             for entry in ledger_contents:
                 if entry not in file_contents:
                     file.write(entry)
+                    file_contents += entry
