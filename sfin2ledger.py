@@ -22,9 +22,51 @@ FIDELITY_BROKERAGE = "Assets:Equity:FidelityBrokerage"
 FIDELITY_IRA = "Assets:Equity:FidelityIRA"
 GUIDELINE_401K = "Assets:Equity:Guideline401k"
 LMCU_CHECKING = "Assets:Saving:LMCU"
-PAYPAL_CRYPTO = "Assets:Crypto:Paypal"
+PAYPAL_CASH = "Assets:Cash:Paypal"
+PENFED_MORTGAGE = "Liabilities:Mortgage:Penfed"
 SEATTLE_CITY_LIGHT = "Liabilities:Utilities:SeattleCityLight"
 VENMO_CASH = "Assets:Cash:Venmo"
+
+RESTURAUNT_PAYEES = [
+    "3rd Street Diner",
+    "Auntie Ann's",
+    "Bamboo Sushi Seatt",
+    "Bliss Tea Tulalip",
+    "Burger Compan",
+    "Burger Company",
+    "Cleo's Brown Beam Tavern",
+    "Coffee Tree",
+    "Denny's",
+    "Dimitriou's Jazz Alley",
+    "Eggspectation",
+    "Happy Lemon University",
+    "Hokkaido Ramen Santouseattle Wa",
+    "Island Girl Seafood",
+    "Mango for Everyone Quil Ceda Vilwa",
+    "Pagliacci Magnolia",
+    "Qdoba",
+    "Shiki",
+    "Starbucks",
+    "Sushi Burrito",
+    "Sushi Lover",
+    "Taco Bell",
+    "Tacos Chukis South",
+    "Tacos Chukis South Laseattle Wa",
+    "Von's Spirits Seattle Wa Restaurants"
+]
+
+WEB_SERVICE_PAYEES = [
+    "Amazon Prime Membership",
+    "Github.com",
+    "Google Domains",
+    "Google Drive",
+    "Kagi.com",
+    "OpenAI",
+    "Patreon",
+    "Raindrop Io",
+    "Simplefin.org",
+    "Wasabi Technologies"
+]
 
 # account is a simplefin json object
 def lookupAccount(account):
@@ -71,7 +113,7 @@ def lookupAccount(account):
 
     if org_name == "Paypal":
         if account_name == "Crypto":
-            return PAYPAL_CRYPTO
+            return PAYPAL_CASH
 
     if org_name == "Seattle City Light":
         if account_name == "Bill 5905":
@@ -104,6 +146,9 @@ def lookupIncome(account, transaction):
     if payee == "Electronic Arts":
         return "Income:Salary:ElectronicArts"
 
+    if payee == "M Waltz" and description.startswith("DEPOSIT RMPR"):
+        return "Income:Refund:Anduril"
+
     if payee == "Dividend":
         return "Income:Dividend"
     
@@ -126,11 +171,95 @@ def lookupExpense(account, transaction):
         return CITI_CARD
     if payee == "Discover Credit Card":
         return DISCOVER_CARD
+    if payee == "Mortgage Payment":
+        return PENFED_MORTGAGE
     if payee == "Seattle City Light":
         return SEATTLE_CITY_LIGHT
+    if payee == "Transfer to Venmo":
+        return VENMO_CASH
 
+    if payee == "Becu Webxfr Transfer Data Onlne Co Name Matoska Waltz":
+        return BECU_CHECKING
+
+    # for some reason there's one of these for every interest transaction
+    if account in [FIDELITY_BROKERAGE, FIDELITY_IRA]:
+        if payee == "Reinvestment Cash" or description == "REINVESTMENT FIDELITY GOVERNMENT MONEY MARKET (SPAXX) (Cash)":
+            return ""
+
+    if account == SEATTLE_CITY_LIGHT:
+        if payee == "Bill Amount":
+            return "Expenses:Utilities"
+
+    if payee in ["Asian Family Market Se", "Costco", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
+        return "Expenses:Food:Groceries"
+    if payee in RESTURAUNT_PAYEES:
+        return "Expenses:Food:Resturaunts"
+    if payee in ["Classbento"]:
+        return "Expenses:Entertainment:Classes"
     if payee == "Humble Bundle":
+        return "Expenses:Entertainment:Digital"
+    if payee in ["PlayStation"]:
+        return "Expenses:Entertainment:Games"
+    if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Mixed Martial"]:
+        return "Expenses:Entertainment:Recreation"
+    if payee in ["Jazzalley.com"]:
+        return "Expenses:Entertainment:Shows"
+    if payee in ["Dental Care", "Elevate Chiropractic"]:
+        return "Expenses:Healthcare"
+    if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
+        return "Expenses:Healthcare:Drugs"
+    if payee in ["The Home Depot"]:
+        return "Expenses:Home"
+    if payee in ["Ikea"]:
+        return "Expenses:Home:Furnishings"
+    if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Meowtel Inc", "Petco", "Petco.com"]:
+        return "Expenses:Pets"
+    if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com"]:
+        return "Expenses:Shopping"
+    if payee in ["Kinokuniya Bookstores"]:
+        return "Expenses:Shopping:Books"
+    if payee in ["Abercrombie & Fitch", "Calvin Klein", "Express", "Skechers", "Ted Baker", "Under Armour", "UNIQLO"]:
+        return "Expenses:Shopping:Clothing"
+    if payee in ["Michaels"]:
+        return "Expenses:Shopping:Crafts"
+    if payee in ["Uncommon Goods"]:
+        return "Expenses:Shopping:Gifts"
+    if payee == "T-Mobile":
+        return "Expenses:Subscriptions:CellService"
+    if payee == "CenturyLink":
+        return "Expenses:Subscriptions:InternetService"
+    if (payee == "Email" and description.startswith("BC.HEY EMAIL")) or payee in WEB_SERVICE_PAYEES:
+        return "Expenses:Subscriptions:WebServices"
+    if payee in ["Delta Airlines"]:
+        return "Expenses:Travel:Air"
+    if payee in ["Washington State Ferries"]:
+        return "Expenses:Travel:Fares"
+    if payee in ["Costco Gas"]:
+        return "Expenses:Travel:Gas"
+    if payee in ["Lyft", "Uber Trip"]:
+        return "Expenses:Travel:Ground"
+    if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin"]:
+        return "Expenses:Travel:Parking"
+    if payee in ["WSDOT Good To Go Pass"]:
+        return "Expenses:Travel:Tolls"
+    if payee == "Seattle Public Utilities":
+        return "Expenses:Utilities"
+    if payee == "Puget Sound Energy":
+        return "Expenses:Utilities:NaturalGas"
+    
+    # long tail low confidence matching
+    if "Museum" in payee:
         return "Expenses:Entertainment"
+    if "Theatre" in payee:
+        return "Expenses:Entertainment:Shows"
+    if "Drug" in payee:
+        return "Expenses:Healthcare:Drugs"
+    if "Parking" in payee:
+        return "Expenses:Travel:Parking"
+    if "Gas" in payee or "Fuel" in payee:
+        return "Expenses:Travel:Gas"
+    if "Inn" in payee:
+        return "Expenses:Travel:Lodging"
 
     return f"Expenses:UNKNOWN:{payee}"
 
