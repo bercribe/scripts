@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
 import json
+import re
 
 BECU_CHECKING = "Assets:JointChecking:BECU"
 BOA_CARD = "Liabilities:CreditCard:BankOfAmerica"
@@ -137,6 +138,9 @@ def lookupIncome(account, transaction):
             return ""
         if payee in ["Automatic Statement Credit"]:
             return "Income:Refund:Cashback"
+    if account == BECU_CHECKING:
+        if payee == "Matoska Waltz Onlne Transfer":
+            return ""
     if account == SEATTLE_CITY_LIGHT and payee == "Payment":
         return ""
 
@@ -161,6 +165,8 @@ def lookupExpense(account, transaction):
     payee = transaction["payee"]
     description = transaction["description"]
 
+    if payee == "Becu Webxfr Transfer Data Onlne Co Name Matoska Waltz":
+        return BECU_CHECKING
     if payee == "Bank of America Credit Card":
         return BOA_CARD
     if payee == "Capital One Credit Card":
@@ -171,6 +177,8 @@ def lookupExpense(account, transaction):
         return CITI_CARD
     if payee == "Discover Credit Card":
         return DISCOVER_CARD
+    if description.startswith("PAYPAL"):
+        return PAYPAL_CASH
     if payee == "Mortgage Payment":
         return PENFED_MORTGAGE
     if payee == "Seattle City Light":
@@ -178,13 +186,14 @@ def lookupExpense(account, transaction):
     if payee == "Transfer to Venmo":
         return VENMO_CASH
 
-    if payee == "Becu Webxfr Transfer Data Onlne Co Name Matoska Waltz":
-        return BECU_CHECKING
-
-    # for some reason there's one of these for every interest transaction
     if account in [FIDELITY_BROKERAGE, FIDELITY_IRA]:
         if payee == "Reinvestment Cash" or description == "REINVESTMENT FIDELITY GOVERNMENT MONEY MARKET (SPAXX) (Cash)":
-            return ""
+            return f"{account}:SPAXX"
+        match = re.search(r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)", description)
+        if match:
+            symbol = match.group(1)
+            return f"{account}:{symbol}"
+            
 
     if account == SEATTLE_CITY_LIGHT:
         if payee == "Bill Amount":
@@ -248,20 +257,26 @@ def lookupExpense(account, transaction):
         return "Expenses:Utilities:NaturalGas"
     
     # long tail low confidence matching
-    if "Museum" in payee:
+    if matchWords(payee, "Museum"):
         return "Expenses:Entertainment"
-    if "Theatre" in payee:
+    if matchWords(payee, "Theatre", "Theatres"):
         return "Expenses:Entertainment:Shows"
-    if "Drug" in payee:
+    if matchWords(payee, "Drug"):
         return "Expenses:Healthcare:Drugs"
-    if "Parking" in payee:
-        return "Expenses:Travel:Parking"
-    if "Gas" in payee or "Fuel" in payee:
+    if matchWords(payee, "Gas", "Fuel"):
         return "Expenses:Travel:Gas"
-    if "Inn" in payee:
+    if matchWords(payee, "Inn", "Inns"):
         return "Expenses:Travel:Lodging"
+    if matchWords(payee, "Parking"):
+        return "Expenses:Travel:Parking"
 
     return f"Expenses:UNKNOWN:{payee}"
+
+def matchWords(phrase, *words):
+    for word in words:
+        if re.search(r'\b' + word + r'\b', phrase):
+            return True
+    return False
 
 # 1. Get a Setup Token
 setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
