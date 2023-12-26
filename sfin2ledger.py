@@ -269,10 +269,14 @@ def lookupCategory(payee, description):
     # long tail low confidence matching
     if matchWords(payee, "Museum"):
         return "Entertainment"
+    if matchWords(payee, "Skate"):
+        return "Entertainment:Recreation"
     if matchWords(payee, "Theatre", "Theatres"):
         return "Entertainment:Shows"
     if matchWords(payee, "Drug"):
         return "Healthcare:Drugs"
+    if matchWords(payee, "Cat", "Cats"):
+        return "Pets"
     if matchWords(payee, "Gas", "Fuel"):
         return "Travel:Gas"
     if matchWords(payee, "Inn", "Inns"):
@@ -395,3 +399,6 @@ with open (main_ledger, 'a+') as main:
                 if entry not in file_contents:
                     file.write(entry)
                     file_contents += entry
+
+if len(data["errors"]) > 0:
+    raise RuntimeError(data["errors"])
