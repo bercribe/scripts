@@ -56,18 +56,18 @@ RESTURAUNT_PAYEES = [
     "Von's Spirits Seattle Wa Restaurants"
 ]
 
-WEB_SERVICE_PAYEES = [
-    "Amazon Prime Membership",
-    "Github.com",
-    "Google Domains",
-    "Google Drive",
-    "Kagi.com",
-    "OpenAI",
-    "Patreon",
-    "Raindrop Io",
-    "Simplefin.org",
-    "Wasabi Technologies"
-]
+SUBSCRIPTIONS = {
+    "Amazon Prime Membership": "WebServices:AmazonPrime",
+    "Github.com": "WebServices:Github",
+    "Google Domains": "WebServices:GoogleDomains",
+    "Google Drive": "WebServices:GoogleOne",
+    "Kagi.com": "WebServices:Kagi",
+    "OpenAI": "WebServices:ChatGPT",
+    "Patreon": "Patreon:MCDM",
+    "Raindrop Io": "WebServices:Raindrop",
+    "Simplefin.org": "WebServices:SimpleFin",
+    "Wasabi Technologies": "WebServices:Wasabi"
+}
 
 # account is a simplefin json object
 def lookupAccount(account):
@@ -247,8 +247,10 @@ def lookupCategory(payee, description):
         return "Subscriptions:CellService"
     if payee == "CenturyLink":
         return "Subscriptions:InternetService"
-    if (payee == "Email" and description.startswith("BC.HEY EMAIL")) or payee in WEB_SERVICE_PAYEES:
-        return "Subscriptions:WebServices"
+    if payee == "Email" and description.startswith("BC.HEY EMAIL"):
+        return "Subscriptions:WebServices:HeyEmail"
+    if payee in SUBSCRIPTIONS.keys():
+        return f"Subscriptions:{SUBSCRIPTIONS[payee]}"
     if payee in ["Delta Airlines"]:
         return "Travel:Air"
     if payee in ["Washington State Ferries"]:
