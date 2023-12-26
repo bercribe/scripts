@@ -159,6 +159,10 @@ def lookupIncome(account, transaction):
     if payee == "Interest Income":
         return "Income:Interest"
 
+    category = lookupCategory(payee, description)
+    if category != "":
+        return f"Income:Refund:{category}"
+
     return f"Income:UNKNOWN:{payee}"
 
 def lookupExpense(account, transaction):
@@ -193,84 +197,90 @@ def lookupExpense(account, transaction):
         if match:
             symbol = match.group(1)
             return f"{account}:{symbol}"
-            
 
     if account == SEATTLE_CITY_LIGHT:
         if payee == "Bill Amount":
             return "Expenses:Utilities"
 
+    category = lookupCategory(payee, description)
+    if category != "":
+        return f"Expenses:{category}"
+
+    return f"Expenses:UNKNOWN:{payee}"
+
+def lookupCategory(payee, description):
     if payee in ["Asian Family Market Se", "Costco", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
-        return "Expenses:Food:Groceries"
+        return "Food:Groceries"
     if payee in RESTURAUNT_PAYEES:
-        return "Expenses:Food:Resturaunts"
+        return "Food:Resturaunts"
     if payee in ["Classbento"]:
-        return "Expenses:Entertainment:Classes"
+        return "Entertainment:Classes"
     if payee == "Humble Bundle":
-        return "Expenses:Entertainment:Digital"
+        return "Entertainment:Digital"
     if payee in ["PlayStation"]:
-        return "Expenses:Entertainment:Games"
+        return "Entertainment:Games"
     if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Mixed Martial"]:
-        return "Expenses:Entertainment:Recreation"
+        return "Entertainment:Recreation"
     if payee in ["Jazzalley.com"]:
-        return "Expenses:Entertainment:Shows"
+        return "Entertainment:Shows"
     if payee in ["Dental Care", "Elevate Chiropractic"]:
-        return "Expenses:Healthcare"
+        return "Healthcare"
     if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
-        return "Expenses:Healthcare:Drugs"
+        return "Healthcare:Drugs"
     if payee in ["The Home Depot"]:
-        return "Expenses:Home"
+        return "Home"
     if payee in ["Ikea"]:
-        return "Expenses:Home:Furnishings"
+        return "Home:Furnishings"
     if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Meowtel Inc", "Petco", "Petco.com"]:
-        return "Expenses:Pets"
+        return "Pets"
     if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com"]:
-        return "Expenses:Shopping"
+        return "Shopping"
     if payee in ["Kinokuniya Bookstores"]:
-        return "Expenses:Shopping:Books"
+        return "Shopping:Books"
     if payee in ["Abercrombie & Fitch", "Calvin Klein", "Express", "Skechers", "Ted Baker", "Under Armour", "UNIQLO"]:
-        return "Expenses:Shopping:Clothing"
+        return "Shopping:Clothing"
     if payee in ["Michaels"]:
-        return "Expenses:Shopping:Crafts"
+        return "Shopping:Crafts"
     if payee in ["Uncommon Goods"]:
-        return "Expenses:Shopping:Gifts"
+        return "Shopping:Gifts"
     if payee == "T-Mobile":
-        return "Expenses:Subscriptions:CellService"
+        return "Subscriptions:CellService"
     if payee == "CenturyLink":
-        return "Expenses:Subscriptions:InternetService"
+        return "Subscriptions:InternetService"
     if (payee == "Email" and description.startswith("BC.HEY EMAIL")) or payee in WEB_SERVICE_PAYEES:
-        return "Expenses:Subscriptions:WebServices"
+        return "Subscriptions:WebServices"
     if payee in ["Delta Airlines"]:
-        return "Expenses:Travel:Air"
+        return "Travel:Air"
     if payee in ["Washington State Ferries"]:
-        return "Expenses:Travel:Fares"
+        return "Travel:Fares"
     if payee in ["Costco Gas"]:
-        return "Expenses:Travel:Gas"
+        return "Travel:Gas"
     if payee in ["Lyft", "Uber Trip"]:
-        return "Expenses:Travel:Ground"
+        return "Travel:Ground"
     if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin"]:
-        return "Expenses:Travel:Parking"
+        return "Travel:Parking"
     if payee in ["WSDOT Good To Go Pass"]:
-        return "Expenses:Travel:Tolls"
+        return "Travel:Tolls"
     if payee == "Seattle Public Utilities":
-        return "Expenses:Utilities"
+        return "Utilities"
     if payee == "Puget Sound Energy":
-        return "Expenses:Utilities:NaturalGas"
+        return "Utilities:NaturalGas"
     
     # long tail low confidence matching
     if matchWords(payee, "Museum"):
-        return "Expenses:Entertainment"
+        return "Entertainment"
     if matchWords(payee, "Theatre", "Theatres"):
-        return "Expenses:Entertainment:Shows"
+        return "Entertainment:Shows"
     if matchWords(payee, "Drug"):
-        return "Expenses:Healthcare:Drugs"
+        return "Healthcare:Drugs"
     if matchWords(payee, "Gas", "Fuel"):
-        return "Expenses:Travel:Gas"
+        return "Travel:Gas"
     if matchWords(payee, "Inn", "Inns"):
-        return "Expenses:Travel:Lodging"
+        return "Travel:Lodging"
     if matchWords(payee, "Parking"):
-        return "Expenses:Travel:Parking"
-
-    return f"Expenses:UNKNOWN:{payee}"
+        return "Travel:Parking"
+    
+    return ""
 
 def matchWords(phrase, *words):
     for word in words:
