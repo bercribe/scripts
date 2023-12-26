@@ -24,3 +24,11 @@ Fetches recent transactions and saves them to a ledger. To run:
 ```
 python3 sfin2ledger.py
 ```
+
+### ledger_scheduler.py
+Modified from - https://github.com/tazzben/LedgerScheduler
+Moves transactions from a projection ledger into the main ledger.
+
+```
+python3 ledger_scheduler.py -s projected.ledger -d main.ledger
+```
