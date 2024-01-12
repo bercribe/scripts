@@ -403,4 +403,4 @@ with open (main_ledger, 'a+') as main:
                     file_contents += entry
 
 if len(data["errors"]) > 0:
-    raise RuntimeError(data["errors"])
+    raise RuntimeError(data["errors"], "https://beta-bridge.simplefin.org/auth/login")
