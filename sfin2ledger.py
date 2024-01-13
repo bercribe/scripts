@@ -128,7 +128,7 @@ def lookupAccount(account):
 
 # TODO: implement these
 # account is a string, transaction is a simplefin json object
-def lookupIncome(account, transaction):
+def lookupIncome(account, transaction, amount):
     payee = transaction["payee"]
     description = transaction["description"]
 
@@ -136,13 +136,22 @@ def lookupIncome(account, transaction):
     if account in [BOA_CARD, CAPITAL_ONE_CARD, CHASE_CARD, CITI_CARD, DISCOVER_CARD]:
         if payee in ["Automatic Payment", "Bank of America Electronic Payment", "Capital One Credit Card", "Credit Card Payment"]:
             return ""
-        if payee in ["Automatic Statement Credit"]:
+        if payee in ["Automatic Statement Credit", "Automatic Statement Credit Awards and Rebate Credits"]:
             return "Income:Refund:Cashback"
     if account == BECU_CHECKING:
         if payee == "Matoska Waltz Onlne Transfer":
             return ""
+    if account == LMCU_CHECKING:
+        if payee == "Deposit Matoska Waltz P Data Onlne Transfer Co Becu Webxfr Name":
+            return ""
     if account == SEATTLE_CITY_LIGHT and payee == "Payment":
         return ""
+
+    if account == GUIDELINE_401K:
+        if amount < 1000:
+            return "Income:Dividend"
+        else:
+            return "Income:Salary:Anduril"
 
     if payee == "Anduril Industri":
         return "Income:Salary:Anduril"
@@ -171,6 +180,8 @@ def lookupExpense(account, transaction):
 
     if payee == "Becu Webxfr Transfer Data Onlne Co Name Matoska Waltz":
         return BECU_CHECKING
+    if payee == "Lamicu Webxfr Onlne Transfer":
+        return LMCU_CHECKING
     if payee == "Bank of America Credit Card":
         return BOA_CARD
     if payee == "Capital One Credit Card":
@@ -233,7 +244,7 @@ def lookupCategory(payee, description):
         return "Home:Furnishings"
     if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Meowtel Inc", "Petco", "Petco.com"]:
         return "Pets"
-    if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com"]:
+    if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
     if payee in ["Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -279,6 +290,8 @@ def lookupCategory(payee, description):
         return "Healthcare:Drugs"
     if matchWords(payee, "Cat", "Cats"):
         return "Pets"
+    if matchWords(payee, "Google"):
+        return "Shopping:Virtual"
     if matchWords(payee, "Gas", "Fuel"):
         return "Travel:Gas"
     if matchWords(payee, "Inn", "Inns"):
@@ -347,7 +360,7 @@ def simplefin2Ledger(data):
         account_name = lookupAccount(trans['account'])
         if amount > 0:
             # income
-            income_name = lookupIncome(account_name, trans)
+            income_name = lookupIncome(account_name, trans, amount)
             if income_name == "":
                 continue
             amount = '${0}'.format(abs(amount))
