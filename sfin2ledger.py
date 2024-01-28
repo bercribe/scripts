@@ -320,7 +320,7 @@ access_url = "https://36C0AB5239276B8157BC30B0AD96F38AF9B7CBC5FC0AF5B1BFAAA6BA5A
 
 main_ledger = "main.ledger"
 ledger_prefix = "sfin"
-days_to_fetch = 7
+days_to_fetch = 14
 
 def fetchSimplefin():
     # 3. Get some data
