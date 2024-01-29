@@ -16,6 +16,7 @@ import re
 BECU_CHECKING = "Assets:JointChecking:BECU"
 BOA_CARD = "Liabilities:CreditCard:BankOfAmerica"
 CAPITAL_ONE_CARD = "Liabilities:JointCreditCard:CapitalOne"
+CASH = "Assets:Cash"
 CHASE_CARD = "Liabilities:CreditCard:Chase"
 CITI_CARD = "Liabilities:JointCreditCard:Citi"
 DISCOVER_CARD = "Liabilities:CreditCard:Discover"
@@ -87,7 +88,7 @@ def lookupAccount(account):
             return CAPITAL_ONE_CARD
 
     if org_name == "Chase Bank":
-        if account_name == "CREDIT CARD":
+        if account_name in ["CREDIT CARD", "Amazon Prime Rewards Visa Signature"]:
             return CHASE_CARD
 
     if org_name == "Citibank":
@@ -136,13 +137,16 @@ def lookupIncome(account, transaction, amount):
     if account in [BOA_CARD, CAPITAL_ONE_CARD, CHASE_CARD, CITI_CARD, DISCOVER_CARD]:
         if payee in ["Automatic Payment", "Bank of America Electronic Payment", "Capital One Credit Card", "Credit Card Payment"]:
             return ""
-        if payee in ["Automatic Statement Credit", "Automatic Statement Credit Awards and Rebate Credits"]:
+        if payee in ["Automatic Statement Credit", "Automatic Statement Credit Awards and Rebate Credits", "Cash Rewards", "Cash Back Reward", "Redemption Credit"]:
             return "Income:Refund:Cashback"
     if account == BECU_CHECKING:
         if payee == "Matoska Waltz Onlne Transfer":
             return ""
     if account == LMCU_CHECKING:
         if payee == "Deposit Matoska Waltz P Data Onlne Transfer Co Becu Webxfr Name":
+            return ""
+    if account == FIDELITY_BROKERAGE:
+        if payee == "Electronic Funds Transfer Received":
             return ""
     if account == SEATTLE_CITY_LIGHT and payee == "Payment":
         return ""
@@ -182,6 +186,8 @@ def lookupExpense(account, transaction):
         return BECU_CHECKING
     if payee == "Lamicu Webxfr Onlne Transfer":
         return LMCU_CHECKING
+    if account != FIDELITY_BROKERAGE and payee == "Fidelity":
+        return FIDELITY_BROKERAGE
     if payee == "Bank of America Credit Card":
         return BOA_CARD
     if payee == "Capital One Credit Card":
@@ -192,14 +198,16 @@ def lookupExpense(account, transaction):
         return CITI_CARD
     if payee == "Discover Credit Card":
         return DISCOVER_CARD
-    if description.startswith("PAYPAL"):
-        return PAYPAL_CASH
     if payee == "Mortgage Payment":
         return PENFED_MORTGAGE
-    if payee == "Seattle City Light":
-        return SEATTLE_CITY_LIGHT
+    if description.startswith("PAYPAL"):
+        return PAYPAL_CASH
     if payee == "Transfer to Venmo":
         return VENMO_CASH
+    if payee == "ATM Withdrawal":
+        return CASH
+    if payee == "Seattle City Light":
+        return SEATTLE_CITY_LIGHT
 
     if account in [FIDELITY_BROKERAGE, FIDELITY_IRA]:
         if payee == "Reinvestment Cash" or description == "REINVESTMENT FIDELITY GOVERNMENT MONEY MARKET (SPAXX) (Cash)":
@@ -224,16 +232,20 @@ def lookupCategory(payee, description):
         return "Food:Groceries"
     if payee in RESTURAUNT_PAYEES:
         return "Food:Resturaunts"
+    if payee in ["DoorDash"]:
+        return "Food:Takeout"
     if payee in ["Classbento"]:
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
     if payee in ["PlayStation"]:
         return "Entertainment:Games"
-    if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Mixed Martial"]:
+    if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Ice Center Travel Entertainment", "Seattle Mixed Martial"]:
         return "Entertainment:Recreation"
     if payee in ["Jazzalley.com"]:
         return "Entertainment:Shows"
+    if payee in ["Foreign Transaction Fee"]:
+        return "Fees"
     if payee in ["Dental Care", "Elevate Chiropractic"]:
         return "Healthcare"
     if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
@@ -242,9 +254,9 @@ def lookupCategory(payee, description):
         return "Home"
     if payee in ["Ikea"]:
         return "Home:Furnishings"
-    if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Meowtel Inc", "Petco", "Petco.com"]:
+    if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Matoska Waltz Paid Caitlin Dejong", "Meowtel Inc", "Petco", "Petco.com"]:
         return "Pets"
-    if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
+    if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
     if payee in ["Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -268,7 +280,7 @@ def lookupCategory(payee, description):
         return "Travel:Fares"
     if payee in ["Costco Gas"]:
         return "Travel:Gas"
-    if payee in ["Lyft", "Uber Trip"]:
+    if payee in ["Byt King County Metro", "Lyft", "Uber Trip"]:
         return "Travel:Ground"
     if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin"]:
         return "Travel:Parking"
@@ -411,7 +423,7 @@ with open (main_ledger, 'a+') as main:
             file.seek(0)
             file_contents = file.read()
             for entry in ledger_contents:
-                if entry not in file_contents:
+                if re.sub('\s+', ' ', entry) not in re.sub('\s+', ' ', file_contents):
                     file.write(entry)
                     file_contents += entry
 
