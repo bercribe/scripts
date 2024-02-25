@@ -244,7 +244,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if payee in ["Jazzalley.com"]:
         return "Entertainment:Shows"
-    if payee in ["Foreign Transaction Fee"]:
+    if payee in ["Foreign Transaction Fee", "Deposit ATM Refund"]:
         return "Fees"
     if payee in ["Dental Care", "Elevate Chiropractic"]:
         return "Healthcare"
@@ -254,7 +254,7 @@ def lookupCategory(payee, description):
         return "Home"
     if payee in ["Ikea"]:
         return "Home:Furnishings"
-    if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Matoska Waltz Paid Caitlin Dejong", "Meowtel Inc", "Petco", "Petco.com"]:
+    if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Matoska Waltz Paid Caitlin Dejong", "Meowtel Inc", "Petco", "Petco.com", "Mud Bay Pet Supplies"]:
         return "Pets"
     if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
@@ -266,7 +266,7 @@ def lookupCategory(payee, description):
         return "Shopping:Crafts"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
-    if payee == "T-Mobile":
+    if payee in ["T-Mobile", "Fi 57p5v7"]:
         return "Subscriptions:CellService"
     if payee == "CenturyLink":
         return "Subscriptions:InternetService"
