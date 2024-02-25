@@ -12,6 +12,7 @@ from decimal import Decimal
 from collections import defaultdict
 import json
 import re
+import yfinance as yf
 
 BECU_CHECKING = "Assets:JointChecking:BECU"
 BOA_CARD = "Liabilities:CreditCard:BankOfAmerica"
@@ -69,6 +70,18 @@ SUBSCRIPTIONS = {
     "Simplefin.org": "WebServices:SimpleFin",
     "Wasabi Technologies": "WebServices:Wasabi"
 }
+
+def getStockPrice(symbol, date):
+    start_date = date.strftime("%Y-%m-%d")
+    end_date = date + timedelta(days=1)
+    end_date = end_date.strftime("%Y-%m-%d")
+
+    ticker = yf.Ticker(symbol)
+    hist = ticker.history(start=start_date, end=end_date)
+    if not hist.empty:
+        return hist["Close"][0]
+    else:
+        return None
 
 # account is a simplefin json object
 def lookupAccount(account):
@@ -319,6 +332,25 @@ def matchWords(phrase, *words):
             return True
     return False
 
+def checkAltPrice(account, transaction):
+    if account not in [FIDELITY_BROKERAGE, FIDELITY_IRA]:
+        return None
+
+    description = transaction["description"]
+    match = re.search(r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)", description)
+    if not match:
+        return None
+
+    symbol = match.group(1)
+    date = datetime.fromtimestamp(transaction['posted'])
+    price = getStockPrice(symbol, date)
+    if price == None:
+        return None
+
+    amount = abs(float(transaction['amount']))
+    stock_count = amount / price
+    return f"{stock_count:.6f} {symbol} @@ {amount:.2f} USD"
+
 # 1. Get a Setup Token
 setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
 def claimAccessToken():
@@ -375,7 +407,8 @@ def simplefin2Ledger(data):
             income_name = lookupIncome(account_name, trans, amount)
             if income_name == "":
                 continue
-            amount = '${0}'.format(abs(amount))
+            alt_price = checkAltPrice(account_name, trans)
+            amount = alt_price or '${0}'.format(abs(amount))
             space = ' '*max(approx_width-len(account_name)-len(amount), 4)
             entry.append('    {account_name}{space}{amount}'.format(
                 account_name=account_name,
@@ -387,7 +420,8 @@ def simplefin2Ledger(data):
             expense_name = lookupExpense(account_name, trans)
             if expense_name == "":
                 continue
-            amount = '${0}'.format(abs(amount))
+            alt_price = checkAltPrice(account_name, trans)
+            amount = alt_price or '${0}'.format(abs(amount))
             space = ' '*max(approx_width-len(expense_name)-len(amount), 4)
             entry.append('    {expense_name}{space}{amount}'.format(
                 expense_name=expense_name,
