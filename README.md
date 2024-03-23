@@ -24,8 +24,7 @@ python notion_reading_list.py
 Fetches URLs for reading list.
 install:
 ```
-pip install requests
-pip install pyyaml
+pip install requests pyyaml
 ```
 run:
 ```

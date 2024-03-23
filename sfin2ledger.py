@@ -47,6 +47,7 @@ RESTURAUNT_PAYEES = [
     "Island Girl Seafood",
     "Mango for Everyone Quil Ceda Vilwa",
     "Pagliacci Magnolia",
+    "Py Delicatus Location",
     "Qdoba",
     "Shiki",
     "Starbucks",
@@ -55,10 +56,13 @@ RESTURAUNT_PAYEES = [
     "Taco Bell",
     "Tacos Chukis South",
     "Tacos Chukis South Laseattle Wa",
-    "Von's Spirits Seattle Wa Restaurants"
+    "The Dolar Shop",
+    "Tuktukthai Tuk",
+    "Von's Spirits Seattle Wa Restaurants",
 ]
 
 SUBSCRIPTIONS = {
+    "Appest Limited Wan Chai": "WebServices:TickTick",
     "Amazon Prime Membership": "WebServices:AmazonPrime",
     "Github.com": "WebServices:Github",
     "Google Domains": "WebServices:GoogleDomains",
@@ -68,7 +72,7 @@ SUBSCRIPTIONS = {
     "Patreon": "Patreon:MCDM",
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin.org": "WebServices:SimpleFin",
-    "Wasabi Technologies": "WebServices:Wasabi"
+    "Wasabi Technologies": "WebServices:Wasabi",
 }
 
 def getStockPrice(symbol, date):
@@ -241,12 +245,8 @@ def lookupExpense(account, transaction):
     return f"Expenses:UNKNOWN:{payee}"
 
 def lookupCategory(payee, description):
-    if payee in ["Asian Family Market Se", "Costco", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
-        return "Food:Groceries"
-    if payee in RESTURAUNT_PAYEES:
-        return "Food:Resturaunts"
-    if payee in ["DoorDash"]:
-        return "Food:Takeout"
+    if payee in ["Raygun Lounge Seattle Wa"]:
+        return "Entertainment:Bars"
     if payee in ["Classbento"]:
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
@@ -255,17 +255,23 @@ def lookupCategory(payee, description):
         return "Entertainment:Games"
     if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Ice Center Travel Entertainment", "Seattle Mixed Martial"]:
         return "Entertainment:Recreation"
-    if payee in ["Jazzalley.com"]:
+    if payee in ["Jazzalley.com", "StubHub!", "Ticketmaster"]:
         return "Entertainment:Shows"
     if payee in ["Foreign Transaction Fee", "Deposit ATM Refund"]:
         return "Fees"
+    if payee in ["Asian Family Market Se", "Costco", "Girl Scouts", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
+        return "Food:Groceries"
+    if payee in RESTURAUNT_PAYEES:
+        return "Food:Resturaunts"
+    if payee in ["DoorDash"]:
+        return "Food:Takeout"
     if payee in ["Dental Care", "Elevate Chiropractic"]:
         return "Healthcare"
     if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
         return "Healthcare:Drugs"
     if payee in ["The Home Depot"]:
         return "Home"
-    if payee in ["Ikea"]:
+    if payee in ["Ikea", "Room & Board Web"]:
         return "Home:Furnishings"
     if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Matoska Waltz Paid Caitlin Dejong", "Meowtel Inc", "Petco", "Petco.com", "Mud Bay Pet Supplies"]:
         return "Pets"
@@ -279,7 +285,9 @@ def lookupCategory(payee, description):
         return "Shopping:Crafts"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
-    if payee in ["T-Mobile", "Fi 57p5v7"]:
+    if payee in ["Paypro Europe Limited London Merchandise"]:
+        return "Shopping:Virtual"
+    if payee in ["T-Mobile"]:
         return "Subscriptions:CellService"
     if payee == "CenturyLink":
         return "Subscriptions:InternetService"
@@ -295,6 +303,8 @@ def lookupCategory(payee, description):
         return "Travel:Gas"
     if payee in ["Byt King County Metro", "Lyft", "Uber Trip"]:
         return "Travel:Ground"
+    if payee in ["Washington Vehicle Licensing"]:
+        return "Travel:License"
     if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin"]:
         return "Travel:Parking"
     if payee in ["WSDOT Good To Go Pass"]:
@@ -311,12 +321,18 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if matchWords(payee, "Theatre", "Theatres"):
         return "Entertainment:Shows"
+    if matchWords(payee, "Restaurants"):
+        return "Food:Resturaunts"
     if matchWords(payee, "Drug"):
         return "Healthcare:Drugs"
+    if matchWords(payee, "Couch"):
+        return "Home:Furnishings"
     if matchWords(payee, "Cat", "Cats"):
         return "Pets"
     if matchWords(payee, "Google"):
         return "Shopping:Virtual"
+    if matchWords(payee, "Fi"):
+        return "Subscriptions:CellService"
     if matchWords(payee, "Gas", "Fuel"):
         return "Travel:Gas"
     if matchWords(payee, "Inn", "Inns"):
