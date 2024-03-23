@@ -45,6 +45,8 @@ RESTURAUNT_PAYEES = [
     "Happy Lemon University",
     "Hokkaido Ramen Santouseattle Wa",
     "Island Girl Seafood",
+    "Itsumono",
+    "Joule Stone",
     "Mango for Everyone Quil Ceda Vilwa",
     "Pagliacci Magnolia",
     "Py Delicatus Location",
@@ -253,9 +255,9 @@ def lookupCategory(payee, description):
         return "Entertainment:Digital"
     if payee in ["PlayStation"]:
         return "Entertainment:Games"
-    if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Ice Center Travel Entertainment", "Seattle Mixed Martial"]:
+    if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Ice Center Travel Entertainment", "Seattle Mixed Martial", "Vertical World Seattle Vertiwa"]:
         return "Entertainment:Recreation"
-    if payee in ["Jazzalley.com", "StubHub!", "Ticketmaster"]:
+    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster"]:
         return "Entertainment:Shows"
     if payee in ["Foreign Transaction Fee", "Deposit ATM Refund"]:
         return "Fees"
@@ -275,6 +277,10 @@ def lookupCategory(payee, description):
         return "Home:Furnishings"
     if payee in ["Banfield Pet Hospital", "Chewy", "Magnolia Paw Spa", "Matoska Waltz Paid Caitlin Dejong", "Meowtel Inc", "Petco", "Petco.com", "Mud Bay Pet Supplies"]:
         return "Pets"
+    if payee in ["Bartkowiak Accounting"]:
+        return "Services:Accounting"
+    if payee in ["Greenwood Heating & Ai"]:
+        return "Services:Contractors"
     if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
     if payee in ["Kinokuniya Bookstores"]:
@@ -299,7 +305,7 @@ def lookupCategory(payee, description):
         return "Travel:Air"
     if payee in ["Washington State Ferries"]:
         return "Travel:Fares"
-    if payee in ["Costco Gas"]:
+    if payee in ["ARCO", "Costco Gas"]:
         return "Travel:Gas"
     if payee in ["Byt King County Metro", "Lyft", "Uber Trip"]:
         return "Travel:Ground"
