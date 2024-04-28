@@ -30,6 +30,24 @@ PENFED_MORTGAGE = "Liabilities:Mortgage:Penfed"
 SEATTLE_CITY_LIGHT = "Liabilities:Utilities:SeattleCityLight"
 VENMO_CASH = "Assets:Cash:Venmo"
 
+FIDELITY_ACCOUNTS = [FIDELITY_BROKERAGE, FIDELITY_IRA]
+
+FIDELITY_DESCRIPTION_PATTERNS = [
+    r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)",
+    r"REINVESTMENT.*\((.*)\) \(Cash\)",
+]
+
+RECREATION_PAYEES = [
+    "Century Ballroom",
+    "Grace Gow",
+    "Pay Northwest",
+    "Seattle Ice Center",
+    "Seattle Ice Center Travel Entertainment",
+    "Seattle Mixed Martial",
+    "Vertical World Seattle",
+    "Vertical World Seattle Vertiwa",
+]
+
 RESTURAUNT_PAYEES = [
     "3rd Street Diner",
     "Auntie Ann's",
@@ -205,7 +223,7 @@ def lookupExpense(account, transaction):
         return BECU_CHECKING
     if payee == "Lamicu Webxfr Onlne Transfer":
         return LMCU_CHECKING
-    if account != FIDELITY_BROKERAGE and payee == "Fidelity":
+    if account not in FIDELITY_ACCOUNTS and payee == "Fidelity":
         return FIDELITY_BROKERAGE
     if payee == "Bank of America Credit Card":
         return BOA_CARD
@@ -228,13 +246,14 @@ def lookupExpense(account, transaction):
     if payee == "Seattle City Light":
         return SEATTLE_CITY_LIGHT
 
-    if account in [FIDELITY_BROKERAGE, FIDELITY_IRA]:
+    if account in FIDELITY_ACCOUNTS:
         if payee == "Reinvestment Cash" or description == "REINVESTMENT FIDELITY GOVERNMENT MONEY MARKET (SPAXX) (Cash)":
             return f"{account}:SPAXX"
-        match = re.search(r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)", description)
-        if match:
-            symbol = match.group(1)
-            return f"{account}:{symbol}"
+        for pattern in FIDELITY_DESCRIPTION_PATTERNS:
+            match = re.search(pattern, description)
+            if match:
+                symbol = match.group(1)
+                return f"{account}:{symbol}"
 
     if account == SEATTLE_CITY_LIGHT:
         if payee == "Bill Amount":
@@ -249,13 +268,15 @@ def lookupExpense(account, transaction):
 def lookupCategory(payee, description):
     if payee in ["Raygun Lounge Seattle Wa"]:
         return "Entertainment:Bars"
+    if payee in ["Experience Learning Commu"]:
+        return "Entertainment"
     if payee in ["Classbento"]:
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
     if payee in ["PlayStation"]:
         return "Entertainment:Games"
-    if payee in ["Century Ballroom", "Grace Gow", "Pay Northwest", "Seattle Ice Center", "Seattle Ice Center Travel Entertainment", "Seattle Mixed Martial", "Vertical World Seattle Vertiwa"]:
+    if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
     if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster"]:
         return "Entertainment:Shows"
@@ -311,7 +332,7 @@ def lookupCategory(payee, description):
         return "Travel:Ground"
     if payee in ["Washington Vehicle Licensing"]:
         return "Travel:License"
-    if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin"]:
+    if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin", "SpotHero"]:
         return "Travel:Parking"
     if payee in ["WSDOT Good To Go Pass"]:
         return "Travel:Tolls"
@@ -321,13 +342,17 @@ def lookupCategory(payee, description):
         return "Utilities:NaturalGas"
     
     # long tail low confidence matching
+    if matchWords(payee, "Donor"):
+        return "Donations"
     if matchWords(payee, "Museum"):
         return "Entertainment"
+    if matchWords(payee, "Games"):
+        return "Entertainment:Games"
     if matchWords(payee, "Skate"):
         return "Entertainment:Recreation"
     if matchWords(payee, "Theatre", "Theatres"):
         return "Entertainment:Shows"
-    if matchWords(payee, "Restaurants"):
+    if matchWords(payee, "Restaurants", "Roasting", "Seafood"):
         return "Food:Resturaunts"
     if matchWords(payee, "Drug"):
         return "Healthcare:Drugs"
@@ -359,7 +384,10 @@ def checkAltPrice(account, transaction):
         return None
 
     description = transaction["description"]
-    match = re.search(r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)", description)
+    for pattern in FIDELITY_DESCRIPTION_PATTERNS:
+        match = re.search(pattern, description)
+        if match:
+            break
     if not match:
         return None
 
