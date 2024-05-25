@@ -79,11 +79,13 @@ RESTURAUNT_PAYEES = [
     "The Dolar Shop",
     "Tuktukthai Tuk",
     "Von's Spirits Seattle Wa Restaurants",
+    "Yoroshiku Seattle Wa",
 ]
 
 SUBSCRIPTIONS = {
     "Appest Limited Wan Chai": "WebServices:TickTick",
     "Amazon Prime Membership": "WebServices:AmazonPrime",
+    "Du Chinese": "WebServices:DuChinese",
     "Github.com": "WebServices:Github",
     "Google Domains": "WebServices:GoogleDomains",
     "Google Drive": "WebServices:GoogleOne",
@@ -227,7 +229,7 @@ def lookupExpense(account, transaction):
         return FIDELITY_BROKERAGE
     if payee == "Bank of America Credit Card":
         return BOA_CARD
-    if payee == "Capital One Credit Card":
+    if payee in ["Capital One Credit Card", "Capital One Credit Card Payment"]:
         return CAPITAL_ONE_CARD
     if payee == "Chase Credit Card":
         return CHASE_CARD
@@ -332,6 +334,8 @@ def lookupCategory(payee, description):
         return "Travel:Ground"
     if payee in ["Washington Vehicle Licensing"]:
         return "Travel:License"
+    if payee in ["Precision Motorworks"]:
+        return "Travel:Maintenance"
     if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin", "SpotHero"]:
         return "Travel:Parking"
     if payee in ["WSDOT Good To Go Pass"]:
