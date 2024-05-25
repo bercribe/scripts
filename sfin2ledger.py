@@ -23,6 +23,7 @@ CITI_CARD = "Liabilities:JointCreditCard:Citi"
 DISCOVER_CARD = "Liabilities:CreditCard:Discover"
 FIDELITY_BROKERAGE = "Assets:Equity:FidelityBrokerage"
 FIDELITY_IRA = "Assets:Equity:FidelityIRA"
+FIDELITY_ANDURIL_401K = "Assets:Equity:FidelityAnduril401k"
 GUIDELINE_401K = "Assets:Equity:Guideline401k"
 LMCU_CHECKING = "Assets:Checking:LMCU"
 PAYPAL_CASH = "Assets:Cash:Paypal"
@@ -30,7 +31,7 @@ PENFED_MORTGAGE = "Liabilities:Mortgage:Penfed"
 SEATTLE_CITY_LIGHT = "Liabilities:Utilities:SeattleCityLight"
 VENMO_CASH = "Assets:Cash:Venmo"
 
-FIDELITY_ACCOUNTS = [FIDELITY_BROKERAGE, FIDELITY_IRA]
+FIDELITY_ACCOUNTS = [FIDELITY_BROKERAGE, FIDELITY_IRA, FIDELITY_ANDURIL_401K]
 
 FIDELITY_DESCRIPTION_PATTERNS = [
     r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)",
@@ -143,6 +144,15 @@ def lookupAccount(account):
             return FIDELITY_BROKERAGE
         if account_name == "ROTH IRA":
             return FIDELITY_IRA
+    
+    if org_name == "Fidelity 401k":
+        if account_name == "ANDURIL INDUSTRIES":
+            return FIDELITY_ANDURIL_401K
+        else:
+            return ""
+        
+    if org_name == "Fidelity Netbenefits (My Benefits) - Work Place Services":
+        return ""
         
     if org_name == "Guideline":
         if account_name == "Anduril Industries Inc":
@@ -187,6 +197,9 @@ def lookupIncome(account, transaction, amount):
     if account == FIDELITY_BROKERAGE:
         if payee == "Electronic Funds Transfer Received":
             return ""
+    if account == FIDELITY_ANDURIL_401K:
+        if payee == "Contribution":
+            return "Income:Salary:Anduril"
     if account == SEATTLE_CITY_LIGHT and payee == "Payment":
         return ""
 
@@ -208,7 +221,7 @@ def lookupIncome(account, transaction, amount):
     if payee == "Dividend":
         return "Income:Dividend"
     
-    if payee == "Interest Income":
+    if payee in ["Interest", "Interest Income"]:
         return "Income:Interest"
 
     category = lookupCategory(payee, description)
@@ -384,7 +397,7 @@ def matchWords(phrase, *words):
     return False
 
 def checkAltPrice(account, transaction):
-    if account not in [FIDELITY_BROKERAGE, FIDELITY_IRA]:
+    if account not in FIDELITY_ACCOUNTS:
         return None
 
     description = transaction["description"]
@@ -456,6 +469,8 @@ def simplefin2Ledger(data):
         approx_width = 40
 
         account_name = lookupAccount(trans['account'])
+        if account_name == "":
+            continue
         if amount > 0:
             # income
             income_name = lookupIncome(account_name, trans, amount)
