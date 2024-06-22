@@ -42,6 +42,7 @@ RECREATION_PAYEES = [
     "Century Ballroom",
     "Grace Gow",
     "Pay Northwest",
+    "At Seattle Aquarium",
     "Seattle Ice Center",
     "Seattle Ice Center Travel Entertainment",
     "Seattle Mixed Martial",
@@ -70,6 +71,7 @@ RESTURAUNT_PAYEES = [
     "Pagliacci Magnolia",
     "Py Delicatus Location",
     "Qdoba",
+    "Sen Noodle Bar",
     "Shiki",
     "Starbucks",
     "Sushi Burrito",
@@ -78,7 +80,9 @@ RESTURAUNT_PAYEES = [
     "Tacos Chukis South",
     "Tacos Chukis South Laseattle Wa",
     "The Dolar Shop",
+    "Tock Atkamonegi",
     "Tuktukthai Tuk",
+    "Von's Spirits",
     "Von's Spirits Seattle Wa Restaurants",
     "Yoroshiku Seattle Wa",
 ]
@@ -88,13 +92,13 @@ SUBSCRIPTIONS = {
     "Amazon Prime Membership": "WebServices:AmazonPrime",
     "Du Chinese": "WebServices:DuChinese",
     "Github.com": "WebServices:Github",
-    "Google Domains": "WebServices:GoogleDomains",
     "Google Drive": "WebServices:GoogleOne",
     "Kagi.com": "WebServices:Kagi",
     "OpenAI": "WebServices:ChatGPT",
     "Patreon": "Patreon:MCDM",
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin.org": "WebServices:SimpleFin",
+    "Squarespace": "WebServices:Squarespace",
     "Wasabi Technologies": "WebServices:Wasabi",
 }
 
@@ -163,8 +167,10 @@ def lookupAccount(account):
             return LMCU_CHECKING
 
     if org_name == "Paypal":
-        if account_name == "Crypto":
+        if account_name == "Transfer Money":
             return PAYPAL_CASH
+        else:
+            return ""
 
     if org_name == "Seattle City Light":
         if account_name == "Bill 5905":
@@ -189,7 +195,7 @@ def lookupIncome(account, transaction, amount):
         if payee in ["Automatic Statement Credit", "Automatic Statement Credit Awards and Rebate Credits", "Cash Rewards", "Cash Back Reward", "Redemption Credit"]:
             return "Income:Refund:Cashback"
     if account == BECU_CHECKING:
-        if payee == "Matoska Waltz Onlne Transfer":
+        if payee in ["Matoska Waltz", "Matoska Waltz Onlne Transfer"]:
             return ""
     if account == LMCU_CHECKING:
         if payee == "Deposit Matoska Waltz P Data Onlne Transfer Co Becu Webxfr Name":
@@ -281,7 +287,7 @@ def lookupExpense(account, transaction):
     return f"Expenses:UNKNOWN:{payee}"
 
 def lookupCategory(payee, description):
-    if payee in ["Raygun Lounge Seattle Wa"]:
+    if payee in ["Raygun Lounge Seattle Wa", "Shibuya"]:
         return "Entertainment:Bars"
     if payee in ["Experience Learning Commu"]:
         return "Entertainment"
@@ -289,11 +295,11 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["PlayStation"]:
+    if payee in ["PlayStation", "Valve Bellevue Wa Merchandise"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
-    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster"]:
+    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
         return "Entertainment:Shows"
     if payee in ["Foreign Transaction Fee", "Deposit ATM Refund"]:
         return "Fees"
@@ -317,7 +323,11 @@ def lookupCategory(payee, description):
         return "Services:Accounting"
     if payee in ["Greenwood Heating & Ai"]:
         return "Services:Contractors"
-    if payee in ["Alipay Beijing Cny", "Amazon", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
+    if payee in ["Hale Lands"]:
+        return "Services:Gardening"
+    if payee in ["The Cincinnati Insuran"]:
+        return "Services:Insurance"
+    if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
     if payee in ["Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -377,6 +387,8 @@ def lookupCategory(payee, description):
         return "Home:Furnishings"
     if matchWords(payee, "Cat", "Cats"):
         return "Pets"
+    if matchWords(payee, "Merchandise"):
+        return "Shopping"
     if matchWords(payee, "Google"):
         return "Shopping:Virtual"
     if matchWords(payee, "Fi"):
@@ -385,7 +397,7 @@ def lookupCategory(payee, description):
         return "Travel:Gas"
     if matchWords(payee, "Inn", "Inns"):
         return "Travel:Lodging"
-    if matchWords(payee, "Parking"):
+    if matchWords(payee, "Garage", "Parking"):
         return "Travel:Parking"
     
     return ""
