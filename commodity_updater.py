@@ -1,7 +1,7 @@
 import yfinance as yf
 from datetime import datetime
 
-symbols = ["FNILX", "FXAIX", "ETH"]
+symbols = ["FNILX", "FXAIX", "ETH", "VTTSX"]
 
 yf_symbols = {
     "ETH": "ETH-USD"

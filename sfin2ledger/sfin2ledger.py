@@ -408,9 +408,9 @@ def matchWords(phrase, *words):
             return True
     return False
 
-def checkAltPrice(account, transaction):
-    if account not in FIDELITY_ACCOUNTS:
-        return None
+def getSymbol(account, transaction):
+    if account == FIDELITY_ANDURIL_401K:
+        return "VTTSX"
 
     description = transaction["description"]
     for pattern in FIDELITY_DESCRIPTION_PATTERNS:
@@ -419,8 +419,16 @@ def checkAltPrice(account, transaction):
             break
     if not match:
         return None
+    return match.group(1)
 
-    symbol = match.group(1)
+def checkAltPrice(account, transaction):
+    if account not in FIDELITY_ACCOUNTS:
+        return None
+
+    symbol = getSymbol(account, transaction)
+    if not symbol:
+        return None
+
     date = datetime.fromtimestamp(transaction['posted'])
     price = getStockPrice(symbol, date)
     if price == None:
