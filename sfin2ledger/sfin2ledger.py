@@ -67,6 +67,7 @@ RESTURAUNT_PAYEES = [
     "Island Girl Seafood",
     "Itsumono",
     "Joule Stone",
+    "Kamonegi",
     "Mango for Everyone Quil Ceda Vilwa",
     "Pagliacci Magnolia",
     "Py Delicatus Location",
@@ -148,6 +149,8 @@ def lookupAccount(account):
             return FIDELITY_BROKERAGE
         if account_name == "ROTH IRA":
             return FIDELITY_IRA
+        if account_name == "ANDURIL INDUSTRIES":
+            return FIDELITY_ANDURIL_401K
     
     if org_name == "Fidelity 401k":
         if account_name == "ANDURIL INDUSTRIES":
@@ -215,7 +218,7 @@ def lookupIncome(account, transaction, amount):
         else:
             return "Income:Salary:Anduril"
 
-    if payee == "Anduril Industri":
+    if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll"]:
         return "Income:Salary:Anduril"
     
     if payee == "Electronic Arts":
@@ -289,7 +292,7 @@ def lookupExpense(account, transaction):
 def lookupCategory(payee, description):
     if payee in ["Raygun Lounge Seattle Wa", "Shibuya"]:
         return "Entertainment:Bars"
-    if payee in ["Experience Learning Commu"]:
+    if payee in ["Experience Learning Commu", "Prime Video"]:
         return "Entertainment"
     if payee in ["Classbento"]:
         return "Entertainment:Classes"
@@ -299,11 +302,11 @@ def lookupCategory(payee, description):
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
-    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
+    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya", "Woodland Park Zoo"]:
         return "Entertainment:Shows"
     if payee in ["Foreign Transaction Fee", "Deposit ATM Refund"]:
         return "Fees"
-    if payee in ["Asian Family Market Se", "Costco", "Girl Scouts", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
+    if payee in ["Asian Family Market Se", "Costco", "Girl Scouts", "Kiki Bakery Seattle Wa", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
         return "Food:Groceries"
     if payee in RESTURAUNT_PAYEES:
         return "Food:Resturaunts"
@@ -321,12 +324,14 @@ def lookupCategory(payee, description):
         return "Pets"
     if payee in ["Bartkowiak Accounting"]:
         return "Services:Accounting"
-    if payee in ["Greenwood Heating & Ai"]:
+    if payee in ["Fenix Roof Service", "Greenwood Heating & Ai"]:
         return "Services:Contractors"
     if payee in ["Hale Lands"]:
         return "Services:Gardening"
     if payee in ["The Cincinnati Insuran"]:
         return "Services:Insurance"
+    if payee in ["Matoska Waltz Paid Sports Haircut"]:
+        return "Services:PersonalCare"
     if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
     if payee in ["Kinokuniya Bookstores"]:
@@ -387,7 +392,7 @@ def lookupCategory(payee, description):
         return "Home:Furnishings"
     if matchWords(payee, "Cat", "Cats"):
         return "Pets"
-    if matchWords(payee, "Merchandise"):
+    if matchWords(payee, "Amazon Market" "Merchandise"):
         return "Shopping"
     if matchWords(payee, "Google"):
         return "Shopping:Virtual"
