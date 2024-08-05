@@ -489,7 +489,7 @@ def simplefin2Ledger(data):
         ledger_name = f"{ledger_prefix}_{posted.strftime('%Y-%m')}.ledger"
         entry = []
         posted_string = posted.strftime('%Y/%m/%d')
-        entry.append('{0} {1}'.format(posted_string, trans['description']))
+        entry.append('{0} {1} ({2})'.format(posted_string, trans['description'], trans['id'][-4:]))
         amount = Decimal(trans['amount'])
         approx_width = 40
 
