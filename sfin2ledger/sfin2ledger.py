@@ -489,7 +489,9 @@ def simplefin2Ledger(data):
         ledger_name = f"{ledger_prefix}_{posted.strftime('%Y-%m')}.ledger"
         entry = []
         posted_string = posted.strftime('%Y/%m/%d')
-        entry.append('{0} {1} ({2})'.format(posted_string, trans['description'], trans['id'][-4:]))
+        entry.append('{0} {1}'.format(posted_string, trans['description']))
+        trans_id =  trans['id']
+        entry.append(f'    ; id: {trans_id}')
         amount = Decimal(trans['amount'])
         approx_width = 40
 
@@ -524,7 +526,7 @@ def simplefin2Ledger(data):
             entry.append('    {0}'.format(account_name))
         entry.append('')
         entry.append('')
-        entries[ledger_name].append('\n'.join(entry))
+        entries[ledger_name].append({"id": trans_id, "transaction": '\n'.join(entry)})
     return entries
 
 def getSimplefin():
@@ -551,9 +553,11 @@ with open (main_ledger, 'a+') as main:
             file.seek(0)
             file_contents = file.read()
             for entry in ledger_contents:
-                if re.sub('\s+', ' ', entry) not in re.sub('\s+', ' ', file_contents):
-                    file.write(entry)
-                    file_contents += entry
+                trans_id = entry["id"]
+                transaction = entry["transaction"]
+                if trans_id not in file_contents:
+                    file.write(transaction)
+                    file_contents += transaction
 
 if len(data["errors"]) > 0:
     sfin_bridge_url = "https://beta-bridge.simplefin.org/auth/login"
