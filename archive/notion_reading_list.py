@@ -1,3 +1,5 @@
+# Used to add images to notion reading list database.
+
 import os
 from notion_client import Client
 import requests

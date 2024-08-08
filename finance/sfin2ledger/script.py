@@ -1,3 +1,4 @@
+# Fetches recent transactions and saves them to a ledger.
 # based on:
 # https://beta-bridge.simplefin.org/info/developers
 # https://github.com/simplefin/sfin2ledger/blob/master/sfin2ledger.py

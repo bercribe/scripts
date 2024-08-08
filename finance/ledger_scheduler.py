@@ -1,3 +1,6 @@
+# Modified from - https://github.com/tazzben/LedgerScheduler
+# Moves transactions from a projection ledger into the main ledger.
+
 import optparse
 import os
 import platform

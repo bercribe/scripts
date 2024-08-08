@@ -1,0 +1,1 @@
+cp script.py /mnt/mawz-nas/personal-cloud/ledger/sfin2ledger.py
