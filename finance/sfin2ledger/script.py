@@ -444,38 +444,30 @@ def checkAltPrice(account, transaction):
     stock_count = amount / price
     return f"{stock_count:.6f} {symbol} @@ {amount:.2f} USD"
 
-# 1. Get a Setup Token
-setup_token = "aHR0cHM6Ly9iZXRhLWJyaWRnZS5zaW1wbGVmaW4ub3JnL3NpbXBsZWZpbi9jbGFpbS8yMkYzNkVBMTFDRTU2MDcwNUE3ODE0QkU3NEMxODM2RDg5NjgxMDNDMDY5QzZDOTQ0QUU2QkE1QTc2ODlBRkU3NTVEOERFNkY3OTcxMDcxMDM5NjI1MUJCOEVGREJDMTI3M0JFRkFFMzRCNjFFMUVEODQ1MDI5MDZDRUE4NTc5MQ=="
-def claimAccessToken():
-    # 2. Claim an Access URL
-    claim_url = base64.b64decode(setup_token)
-    response = requests.post(claim_url)
-    access_url = response.text
-    print(access_url)
-
-access_url = "https://36C0AB5239276B8157BC30B0AD96F38AF9B7CBC5FC0AF5B1BFAAA6BA5AB4BBEC:4EE0F6998491013B2F394F1818A0C6F3FD294857EC5889B096562735CC97DC20@beta-bridge.simplefin.org/simplefin"
-
 main_ledger = "main.ledger"
 ledger_prefix = "sfin"
 days_to_fetch = 14
 
 def fetchSimplefin():
-    # 3. Get some data
-    scheme, rest = access_url.split('//', 1)
-    auth, rest = rest.split('@', 1)
-    url = scheme + '//' + rest + '/accounts'
-    username, password = auth.split(':', 1)
+    with open("access_url", "r") as url_file:
+        access_url = url_file.read()
+        print(access_url)
+        # 3. Get some data
+        scheme, rest = access_url.split('//', 1)
+        auth, rest = rest.split('@', 1)
+        url = scheme + '//' + rest + '/accounts'
+        username, password = auth.split(':', 1)
 
-    # specify time bounds
-    end = datetime.now()
-    start = end - timedelta(days=days_to_fetch)
-    mparams = {
-        "start-date": str(int(start.timestamp())),
-        "end-date": str(int(end.timestamp())),
-    }
+        # specify time bounds
+        end = datetime.now()
+        start = end - timedelta(days=days_to_fetch)
+        mparams = {
+            "start-date": str(int(start.timestamp())),
+            "end-date": str(int(end.timestamp())),
+        }
 
-    response = requests.get(url, auth=(username, password), params=mparams)
-    return response.json()
+        response = requests.get(url, auth=(username, password), params=mparams)
+        return response.json()
 
 def simplefin2Ledger(data):
     all_trans = []
