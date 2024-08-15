@@ -451,7 +451,6 @@ days_to_fetch = 14
 def fetchSimplefin():
     with open("access_url", "r") as url_file:
         access_url = url_file.read()
-        print(access_url)
         # 3. Get some data
         scheme, rest = access_url.split('//', 1)
         auth, rest = rest.split('@', 1)
