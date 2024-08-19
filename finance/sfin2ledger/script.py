@@ -40,10 +40,12 @@ FIDELITY_DESCRIPTION_PATTERNS = [
 ]
 
 RECREATION_PAYEES = [
+    "At Seattle Aquarium",
     "Century Ballroom",
     "Grace Gow",
+    "Mount Rainier National Park",
     "Pay Northwest",
-    "At Seattle Aquarium",
+    "Recreation.gov",
     "Seattle Ice Center",
     "Seattle Ice Center Travel Entertainment",
     "Seattle Mixed Martial",
@@ -63,6 +65,7 @@ RESTURAUNT_PAYEES = [
     "Denny's",
     "Dimitriou's Jazz Alley",
     "Eggspectation",
+    "Fort St George",
     "Happy Lemon University",
     "Hokkaido Ramen Santouseattle Wa",
     "Island Girl Seafood",
@@ -256,7 +259,7 @@ def lookupExpense(account, transaction):
         return CAPITAL_ONE_CARD
     if payee == "Chase Credit Card":
         return CHASE_CARD
-    if payee == "Citi Credit Card":
+    if payee in ["Citi Credit Card", "Citi Credit Card Payment"]:
         return CITI_CARD
     if payee == "Discover Credit Card":
         return DISCOVER_CARD
@@ -305,7 +308,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya", "Woodland Park Zoo"]:
         return "Entertainment:Shows"
-    if payee in ["Foreign Transaction Fee", "Deposit ATM Refund"]:
+    if payee in ["Deposit ATM Refund", "Foreign Transaction Fee", "International Service Fee"]:
         return "Fees"
     if payee in ["Asian Family Market Se", "Costco", "Girl Scouts", "Kiki Bakery Seattle Wa", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
         return "Food:Groceries"
@@ -343,6 +346,10 @@ def lookupCategory(payee, description):
         return "Shopping:Crafts"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
+    if payee in ["U-Haul"]:
+        return "Shopping:Organizers"
+    if payee in ["Rad Power Bikes"]:
+        return "Shopping:Sports"
     if payee in ["Paypro Europe Limited London Merchandise"]:
         return "Shopping:Virtual"
     if payee in ["T-Mobile"]:
@@ -385,7 +392,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if matchWords(payee, "Theatre", "Theatres"):
         return "Entertainment:Shows"
-    if matchWords(payee, "Restaurants", "Roasting", "Seafood"):
+    if matchWords(payee, "Restaurants", "Roasting", "Seafood", "Tock"):
         return "Food:Resturaunts"
     if matchWords(payee, "Drug"):
         return "Healthcare:Drugs"
@@ -393,7 +400,7 @@ def lookupCategory(payee, description):
         return "Home:Furnishings"
     if matchWords(payee, "Cat", "Cats"):
         return "Pets"
-    if matchWords(payee, "Amazon Market" "Merchandise"):
+    if matchWords(payee, "Amazon Market", "Merchandise"):
         return "Shopping"
     if matchWords(payee, "Google"):
         return "Shopping:Virtual"
