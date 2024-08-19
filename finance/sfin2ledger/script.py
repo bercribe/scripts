@@ -51,6 +51,7 @@ RECREATION_PAYEES = [
     "Seattle Mixed Martial",
     "Vertical World Seattle",
     "Vertical World Seattle Vertiwa",
+    "Woodland Park Zoo",
 ]
 
 RESTURAUNT_PAYEES = [
@@ -303,7 +304,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
-    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya", "Woodland Park Zoo"]:
+    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
         return "Entertainment:Shows"
     if payee in ["Deposit ATM Refund", "Foreign Transaction Fee", "International Service Fee"]:
         return "Fees"
