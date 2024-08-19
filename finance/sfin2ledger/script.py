@@ -156,12 +156,9 @@ def lookupAccount(account):
         if account_name == "ANDURIL INDUSTRIES":
             return FIDELITY_ANDURIL_401K
     
+    # these are covered by the main account
     if org_name == "Fidelity 401k":
-        if account_name == "ANDURIL INDUSTRIES":
-            return FIDELITY_ANDURIL_401K
-        else:
-            return ""
-        
+        return ""
     if org_name == "Fidelity Netbenefits (My Benefits) - Work Place Services":
         return ""
         
