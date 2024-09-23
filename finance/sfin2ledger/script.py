@@ -315,7 +315,7 @@ def lookupCategory(payee, description):
         return "Food:Resturaunts"
     if payee in ["DoorDash"]:
         return "Food:Takeout"
-    if payee in ["Dental Care"] || matchWords(payee, "Elevate Chiropractic"):
+    if payee in ["Dental Care"] or matchWords(payee, "Elevate Chiropractic"):
         return "Healthcare"
     if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
         return "Healthcare:Drugs"
