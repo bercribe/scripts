@@ -81,6 +81,7 @@ RESTURAUNT_PAYEES = [
     "Shiki",
     "Starbucks",
     "Sushi Burrito",
+    "Sushi by Scratch Res",
     "Sushi Lover",
     "Taco Bell",
     "Tacos Chukis South",
@@ -300,7 +301,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["PlayStation", "Valve Bellevue Wa Merchandise"]:
+    if payee in ["Chess.com", "PlayStation", "Valve Bellevue Wa Merchandise"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
@@ -314,7 +315,7 @@ def lookupCategory(payee, description):
         return "Food:Resturaunts"
     if payee in ["DoorDash"]:
         return "Food:Takeout"
-    if payee in ["Dental Care", "Elevate Chiropractic"]:
+    if payee in ["Dental Care"] || matchWords(payee, "Elevate Chiropractic"):
         return "Healthcare"
     if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
         return "Healthcare:Drugs"
@@ -336,12 +337,14 @@ def lookupCategory(payee, description):
         return "Services:PersonalCare"
     if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
         return "Shopping"
-    if payee in ["Kinokuniya Bookstores"]:
+    if payee in ["Kindle", "Kinokuniya Bookstores"]:
         return "Shopping:Books"
     if payee in ["Abercrombie & Fitch", "Calvin Klein", "Express", "Skechers", "Ted Baker", "Under Armour", "UNIQLO"]:
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
+    if payee in ["Adafruit Industries", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
+        return "Shopping:Electronics"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
     if payee in ["U-Haul"]:
@@ -352,7 +355,7 @@ def lookupCategory(payee, description):
         return "Shopping:Virtual"
     if payee in ["T-Mobile"]:
         return "Subscriptions:CellService"
-    if payee == "CenturyLink":
+    if payee in ["CenturyLink", "Centurylink Lumen"]:
         return "Subscriptions:InternetService"
     if payee == "Email" and description.startswith("BC.HEY EMAIL"):
         return "Subscriptions:WebServices:HeyEmail"
