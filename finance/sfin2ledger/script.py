@@ -64,11 +64,14 @@ RESTURAUNT_PAYEES = [
     "Cleo's Brown Beam Tavern",
     "Coffee Tree",
     "Denny's",
+    "Di Fiora",
     "Dimitriou's Jazz Alley",
+    "Donburi House",
     "Eggspectation",
     "Fort St George",
     "Happy Lemon University",
     "Hokkaido Ramen Santouseattle Wa",
+    "Hummingbird Sushi",
     "Island Girl Seafood",
     "Itsumono",
     "Joule Stone",
@@ -89,14 +92,16 @@ RESTURAUNT_PAYEES = [
     "The Dolar Shop",
     "Tock Atkamonegi",
     "Tuktukthai Tuk",
+    "Uep Skybowl Cafe",
     "Von's Spirits",
     "Von's Spirits Seattle Wa Restaurants",
     "Yoroshiku Seattle Wa",
+    "Zhuge Grill Fish",
 ]
 
 SUBSCRIPTIONS = {
     "Appest Limited Wan Chai": "WebServices:TickTick",
-    "Amazon Prime Membership": "WebServices:AmazonPrime",
+    "Amazon Prime" "WebServices:AmazonPrime",
     "Du Chinese": "WebServices:DuChinese",
     "Github.com": "WebServices:Github",
     "Google Drive": "WebServices:GoogleOne",
@@ -104,7 +109,7 @@ SUBSCRIPTIONS = {
     "OpenAI": "WebServices:ChatGPT",
     "Patreon": "Patreon:MCDM",
     "Raindrop Io": "WebServices:Raindrop",
-    "Simplefin.org": "WebServices:SimpleFin",
+    "Simplefin Bridge Httpsbridge": "WebServices:SimpleFin",
     "Squarespace": "WebServices:Squarespace",
     "Wasabi Technologies": "WebServices:Wasabi",
 }
@@ -143,8 +148,7 @@ def lookupAccount(account):
             return CHASE_CARD
 
     if org_name == "Citibank":
-        if account_name == "Costco Anywhere Visa\u00ae\u00a0Card by Citi-0276":
-            return CITI_CARD
+        return CITI_CARD
 
     if org_name == "Discover Credit Card":
         if account_name == "Discover it Card":
@@ -221,7 +225,7 @@ def lookupIncome(account, transaction, amount):
         else:
             return "Income:Salary:Anduril"
 
-    if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll"]:
+    if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll"] or payee.startswith("Deposit Anduril Industri"):
         return "Income:Salary:Anduril"
     
     if payee == "Electronic Arts":
@@ -335,7 +339,7 @@ def lookupCategory(payee, description):
         return "Services:Insurance"
     if payee in ["Matoska Waltz Paid Sports Haircut"]:
         return "Services:PersonalCare"
-    if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise"]:
+    if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "Stuhlbergs"]:
         return "Shopping"
     if payee in ["Kindle", "Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -343,7 +347,7 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
+    if payee in ["Adafruit Industries", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
         return "Shopping:Electronics"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
@@ -373,7 +377,7 @@ def lookupCategory(payee, description):
         return "Travel:License"
     if payee in ["Precision Motorworks"]:
         return "Travel:Maintenance"
-    if payee in ["ParkWhiz", "Paybyphone Diamond Par", "Sdot Paybyphone Parkin", "SpotHero"]:
+    if payee in ["Metropolis", "ParkWhiz", "Paybyphone Diamond Par", "Seattle Central Community", "Sdot Paybyphone Parkin", "SpotHero"]:
         return "Travel:Parking"
     if payee in ["WSDOT Good To Go Pass"]:
         return "Travel:Tolls"
@@ -393,7 +397,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if matchWords(payee, "Theatre", "Theatres"):
         return "Entertainment:Shows"
-    if matchWords(payee, "Restaurants", "Roasting", "Seafood", "Tock"):
+    if matchWords(payee, "Bakery", `"Concessions", "Restaurants", "Roasting", "Seafood", "Tock"):
         return "Food:Resturaunts"
     if matchWords(payee, "Drug"):
         return "Healthcare:Drugs"
