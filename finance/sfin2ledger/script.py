@@ -340,6 +340,8 @@ def lookupCategory(payee, description):
         return "Services:Insurance"
     if payee in ["Matoska Waltz Paid Sports Haircut"]:
         return "Services:PersonalCare"
+    if payee in ["Mullvad"]:
+        return "Services:VPN"
     if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "Stuhlbergs"]:
         return "Shopping"
     if payee in ["Kindle", "Kinokuniya Bookstores"]:
@@ -348,7 +350,7 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
+    if payee in ["Adafruit Industries", "Dell Mkt", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
         return "Shopping:Electronics"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
