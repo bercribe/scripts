@@ -268,8 +268,9 @@ def lookupExpense(account, transaction):
         return DISCOVER_CARD
     if payee == "Mortgage Payment":
         return PENFED_MORTGAGE
-    if description.startswith("PAYPAL"):
-        return PAYPAL_CASH
+    # account linking is broken on sfin bridge
+    # if description.startswith("PAYPAL"):
+    #     return PAYPAL_CASH
     if payee == "Transfer to Venmo":
         return VENMO_CASH
     if payee == "ATM Withdrawal":
