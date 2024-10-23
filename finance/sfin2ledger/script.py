@@ -101,7 +101,7 @@ RESTURAUNT_PAYEES = [
 
 SUBSCRIPTIONS = {
     "Appest Limited Wan Chai": "WebServices:TickTick",
-    "Amazon Prime" "WebServices:AmazonPrime",
+    "Amazon Prime": "WebServices:AmazonPrime",
     "Du Chinese": "WebServices:DuChinese",
     "Github.com": "WebServices:Github",
     "Google Drive": "WebServices:GoogleOne",
