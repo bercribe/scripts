@@ -400,7 +400,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if matchWords(payee, "Theatre", "Theatres"):
         return "Entertainment:Shows"
-    if matchWords(payee, "Bakery", `"Concessions", "Restaurants", "Roasting", "Seafood", "Tock"):
+    if matchWords(payee, "Bakery", "Concessions", "Restaurants", "Roasting", "Seafood", "Tock"):
         return "Food:Resturaunts"
     if matchWords(payee, "Drug"):
         return "Healthcare:Drugs"
