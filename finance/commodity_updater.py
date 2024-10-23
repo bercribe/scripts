@@ -7,7 +7,7 @@ yf_symbols = {
     "ETH": "ETH-USD"
 }
 
-period = "14d"
+period = "1mo"
 
 commodities_ledger = "commodities.ledger"
 
