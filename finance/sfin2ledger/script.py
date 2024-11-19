@@ -82,6 +82,7 @@ RESTURAUNT_PAYEES = [
     "Qdoba",
     "Sen Noodle Bar",
     "Shiki",
+    "Spot Cafe",
     "Starbucks",
     "Sushi Burrito",
     "Sushi by Scratch Res",
@@ -109,7 +110,7 @@ SUBSCRIPTIONS = {
     "OpenAI": "WebServices:ChatGPT",
     "Patreon": "Patreon:MCDM",
     "Raindrop Io": "WebServices:Raindrop",
-    "Simplefin Bridge Httpsbridge": "WebServices:SimpleFin",
+    "Simplefin Bridge": "WebServices:SimpleFin",
     "Squarespace": "WebServices:Squarespace",
     "Wasabi Technologies": "WebServices:Wasabi",
 }
@@ -312,9 +313,11 @@ def lookupCategory(payee, description):
         return "Entertainment:Recreation"
     if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
         return "Entertainment:Shows"
+    if payee in ["Handmadesea"]:
+        return "Events:Tickets"
     if payee in ["Deposit ATM Refund", "Foreign Transaction Fee", "International Service Fee"]:
         return "Fees"
-    if payee in ["Asian Family Market Se", "Costco", "Girl Scouts", "Kiki Bakery Seattle Wa", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
+    if payee in ["Asian Family Market Se", "Ballard", "Costco", "Girl Scouts", "Kiki Bakery Seattle Wa", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
         return "Food:Groceries"
     if payee in RESTURAUNT_PAYEES:
         return "Food:Resturaunts"
@@ -342,7 +345,7 @@ def lookupCategory(payee, description):
         return "Services:PersonalCare"
     if payee in ["Mullvad"]:
         return "Services:VPN"
-    if payee in ["Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "Stuhlbergs"]:
+    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "Stuhlbergs"]:
         return "Shopping"
     if payee in ["Kindle", "Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -350,7 +353,7 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Dell Mkt", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
+    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
         return "Shopping:Electronics"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
