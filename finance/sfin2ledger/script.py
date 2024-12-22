@@ -468,7 +468,7 @@ def checkAltPrice(account, transaction):
 
 main_ledger = "main.ledger"
 ledger_prefix = "sfin"
-days_to_fetch = 14
+days_to_fetch = 30
 
 def fetchSimplefin():
     with open("access_url", "r") as url_file:
