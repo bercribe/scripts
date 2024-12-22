@@ -67,6 +67,7 @@ RESTURAUNT_PAYEES = [
     "Di Fiora",
     "Dimitriou's Jazz Alley",
     "Donburi House",
+    "Dough Zone Kirklan",
     "Eggspectation",
     "Fort St George",
     "Happy Lemon University",
@@ -80,8 +81,10 @@ RESTURAUNT_PAYEES = [
     "Pagliacci Magnolia",
     "Py Delicatus Location",
     "Qdoba",
+    "Raretea Kirkland Kirkland Wa",
     "Sen Noodle Bar",
     "Shiki",
+    "Shiro's Sushi",
     "Spot Cafe",
     "Starbucks",
     "Sushi Burrito",
@@ -93,6 +96,7 @@ RESTURAUNT_PAYEES = [
     "The Dolar Shop",
     "Tock Atkamonegi",
     "Tuktukthai Tuk",
+    "Turtle Coffee Seattle Wa",
     "Uep Skybowl Cafe",
     "Von's Spirits",
     "Von's Spirits Seattle Wa Restaurants",
@@ -226,11 +230,11 @@ def lookupIncome(account, transaction, amount):
         else:
             return "Income:Salary:Anduril"
 
-    if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll"] or payee.startswith("Deposit Anduril Industri"):
+    if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll", "Anduril Industriecc"] or payee.startswith("Deposit Anduril Industri"):
         return "Income:Salary:Anduril"
     
-    if payee == "Electronic Arts":
-        return "Income:Salary:ElectronicArts"
+    if payee == "Magnit, Llc T9995-00f":
+        return "Income:Salary:Meta"
 
     if payee == "M Waltz" and description.startswith("DEPOSIT RMPR"):
         return "Income:Refund:Anduril"
@@ -345,7 +349,7 @@ def lookupCategory(payee, description):
         return "Services:PersonalCare"
     if payee in ["Mullvad"]:
         return "Services:VPN"
-    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "Stuhlbergs"]:
+    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
         return "Shopping"
     if payee in ["Kindle", "Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -381,7 +385,7 @@ def lookupCategory(payee, description):
         return "Travel:Ground"
     if payee in ["Washington Vehicle Licensing"]:
         return "Travel:License"
-    if payee in ["Precision Motorworks"]:
+    if payee in ["Fluerys Collision Center", "Precision Motorworks"]:
         return "Travel:Maintenance"
     if payee in ["Metropolis", "ParkWhiz", "Paybyphone Diamond Par", "Seattle Central Community", "Sdot Paybyphone Parkin", "SpotHero"]:
         return "Travel:Parking"
