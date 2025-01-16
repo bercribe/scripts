@@ -63,7 +63,7 @@ def ParseFile(s,d):
 		
 				
 	pattern = re.compile("^([\\d\\/-]+)",re.U)
-	tabpattern = re.compile("^([\s]+)",re.U)
+	tabpattern = re.compile("^([\\s]+)",re.U)
 	midtransaction = False;
 	for line in rf:
 		wline = pattern.match(line)

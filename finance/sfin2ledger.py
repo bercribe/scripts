@@ -6,6 +6,7 @@
 
 # simplefin spec: https://www.simplefin.org/protocol.html#transaction
 
+import argparse
 import requests
 import base64
 from datetime import datetime, timedelta
@@ -127,7 +128,7 @@ def getStockPrice(symbol, date):
     ticker = yf.Ticker(symbol)
     hist = ticker.history(start=start_date, end=end_date)
     if not hist.empty:
-        return hist["Close"][0]
+        return hist["Close"].iloc[0]
     else:
         return None
 
@@ -470,8 +471,8 @@ main_ledger = "main.ledger"
 ledger_prefix = "sfin"
 days_to_fetch = 30
 
-def fetchSimplefin():
-    with open("access_url", "r") as url_file:
+def fetchSimplefin(access_url_file):
+    with open(access_url_file, "r") as url_file:
         access_url = url_file.read()
         # 3. Get some data
         scheme, rest = access_url.split('//', 1)
@@ -543,36 +544,44 @@ def simplefin2Ledger(data):
         entries[ledger_name].append({"id": trans_id, "transaction": '\n'.join(entry)})
     return entries
 
-def getSimplefin():
+def getSimplefin(log_dir, access_url_file):
     log_name = f"log_{datetime.today().strftime('%Y-%m-%d')}.json"
     try:
-        with open(log_name, "r") as log:
+        with open(f'{log_dir}/{log_name}', "r") as log:
             return json.loads(log.read())
     except:
-        data = fetchSimplefin()
-        with open(log_name, 'a+') as log:
+        data = fetchSimplefin(access_url_file)
+        with open(f'{log_dir}/{log_name}', 'a+') as log:
             log.write(json.dumps(data, indent=4))
         return data
 
-data = getSimplefin()
-ledger = simplefin2Ledger(data)
-with open (main_ledger, 'a+') as main:
-    main.seek(0)
-    main_contents = main.read()
-    for ledger_name, ledger_contents in ledger.items():
-        include_text = f"include {ledger_name}\n"
-        if include_text not in main_contents:
-            main.write(include_text)
-        with open(ledger_name, 'a+') as file:
-            file.seek(0)
-            file_contents = file.read()
-            for entry in ledger_contents:
-                trans_id = entry["id"]
-                transaction = entry["transaction"]
-                if trans_id not in file_contents:
-                    file.write(transaction)
-                    file_contents += transaction
+def main(ledger_dir, log_dir, access_url_file):
+    data = getSimplefin(log_dir, access_url_file)
+    ledger = simplefin2Ledger(data)
+    with open(f'{ledger_dir}/{main_ledger}', 'a+') as main:
+        main.seek(0)
+        main_contents = main.read()
+        for ledger_name, ledger_contents in ledger.items():
+            include_text = f"include {ledger_name}\n"
+            if include_text not in main_contents:
+                main.write(include_text)
+            with open(f'{ledger_dir}/{ledger_name}', 'a+') as file:
+                file.seek(0)
+                file_contents = file.read()
+                for entry in ledger_contents:
+                    trans_id = entry["id"]
+                    transaction = entry["transaction"]
+                    if trans_id not in file_contents:
+                        file.write(transaction)
+                        file_contents += transaction
 
-if len(data["errors"]) > 0:
-    sfin_bridge_url = "https://beta-bridge.simplefin.org/auth/login"
-    raise RuntimeError(data["errors"], sfin_bridge_url)
+    if len(data["errors"]) > 0:
+        sfin_bridge_url = "https://beta-bridge.simplefin.org/auth/login"
+        raise RuntimeError(data["errors"], sfin_bridge_url)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--ledger_dir')
+parser.add_argument('-l', '--log_dir')
+parser.add_argument('-a', '--access_url_file')
+args = parser.parse_args()
+main(args.ledger_dir, args.log_dir, args.access_url_file)
