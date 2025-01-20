@@ -49,6 +49,9 @@ def main(directory):
         else:
             print(f"Original file not found for: {conflict_file}")
 
+    if len(sync_conflict_files) > 0:
+        raise RuntimeError("sync conflicts found!")
+
 if __name__ == "__main__":
     # Set up argument parsing
     parser = argparse.ArgumentParser(description="Compare sync conflict files with original files using Difftastic.")
