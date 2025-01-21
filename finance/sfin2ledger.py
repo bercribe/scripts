@@ -42,7 +42,9 @@ FIDELITY_DESCRIPTION_PATTERNS = [
 
 RECREATION_PAYEES = [
     "At Seattle Aquarium",
+    "Bestlocker",
     "Century Ballroom",
+    "Crystal Mountain Resort",
     "Grace Gow",
     "Mount Rainier National Park",
     "Pay Northwest",
@@ -79,6 +81,7 @@ RESTURAUNT_PAYEES = [
     "Joule Stone",
     "Kamonegi",
     "Mango for Everyone Quil Ceda Vilwa",
+    "Moontree Sushi & Tapas",
     "Pagliacci Magnolia",
     "Py Delicatus Location",
     "Qdoba",
@@ -117,7 +120,7 @@ SUBSCRIPTIONS = {
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin Bridge": "WebServices:SimpleFin",
     "Squarespace": "WebServices:Squarespace",
-    "Wasabi Technologies": "WebServices:Wasabi",
+    "Wasabi.com": "WebServices:Wasabi",
 }
 
 def getStockPrice(symbol, date):
@@ -198,7 +201,6 @@ def lookupAccount(account):
 
     return f"Account:UNKNOWN:{org_name}:{account_name}"
 
-# TODO: implement these
 # account is a string, transaction is a simplefin json object
 def lookupIncome(account, transaction, amount):
     payee = transaction["payee"]
@@ -246,6 +248,9 @@ def lookupIncome(account, transaction, amount):
     if payee in ["Interest", "Interest Income"]:
         return "Income:Interest"
 
+    if payee in ["Payments and Credits"]:
+        return "Income:Refund"
+
     category = lookupCategory(payee, description)
     if category != "":
         return f"Income:Refund:{category}"
@@ -258,7 +263,7 @@ def lookupExpense(account, transaction):
 
     if payee == "Becu Webxfr Transfer Data Onlne Co Name Matoska Waltz":
         return BECU_CHECKING
-    if payee == "Lamicu Webxfr Onlne Transfer":
+    if payee in ["Lamicu", "Lamicu Webxfr Onlne Transfer"]:
         return LMCU_CHECKING
     if account not in FIDELITY_ACCOUNTS and payee == "Fidelity":
         return FIDELITY_BROKERAGE
@@ -312,7 +317,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["Chess.com", "PlayStation", "Valve Bellevue Wa Merchandise"]:
+    if payee in ["Chess.com", "PlayStation", "Steam", "Valve Bellevue Wa Merchandise"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
@@ -322,7 +327,7 @@ def lookupCategory(payee, description):
         return "Events:Tickets"
     if payee in ["Deposit ATM Refund", "Foreign Transaction Fee", "International Service Fee"]:
         return "Fees"
-    if payee in ["Asian Family Market Se", "Ballard", "Costco", "Girl Scouts", "Kiki Bakery Seattle Wa", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
+    if payee in ["Asian Family Market Se", "Ballard", "Costco", "Girl Scouts", "Instacart via Instacart", "Kiki Bakery Seattle Wa", "PCC Community Markets", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
         return "Food:Groceries"
     if payee in RESTURAUNT_PAYEES:
         return "Food:Resturaunts"
@@ -358,7 +363,7 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc"]:
+    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
         return "Shopping:Electronics"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
@@ -378,7 +383,7 @@ def lookupCategory(payee, description):
         return f"Subscriptions:{SUBSCRIPTIONS[payee]}"
     if payee in ["Delta Airlines"]:
         return "Travel:Air"
-    if payee in ["Washington State Ferries"]:
+    if payee in ["Orca Travel Entertainment", "Orca Wagoogle Pay Travel Entertainment", "Washington State Ferries"]:
         return "Travel:Fares"
     if payee in ["ARCO", "Costco Gas"]:
         return "Travel:Gas"
@@ -388,7 +393,7 @@ def lookupCategory(payee, description):
         return "Travel:License"
     if payee in ["Fluerys Collision Center", "Precision Motorworks"]:
         return "Travel:Maintenance"
-    if payee in ["Metropolis", "ParkWhiz", "Paybyphone Diamond Par", "Seattle Central Community", "Sdot Paybyphone Parkin", "SpotHero"]:
+    if payee in ["impark", "Metropolis", "ParkWhiz", "Paybyphone Diamond Par", "Seattle Central Community", "Sdot Paybyphone Parkin", "SpotHero"]:
         return "Travel:Parking"
     if payee in ["WSDOT Good To Go Pass"]:
         return "Travel:Tolls"
