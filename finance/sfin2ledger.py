@@ -81,11 +81,13 @@ RESTURAUNT_PAYEES = [
     "Joule Stone",
     "Kamonegi",
     "Mango for Everyone Quil Ceda Vilwa",
+    "Meet Fresh Tukwila",
     "Moontree Sushi & Tapas",
     "Pagliacci Magnolia",
     "Py Delicatus Location",
     "Qdoba",
     "Raretea Kirkland Kirkland Wa",
+    "Reckless Noodle",
     "Sen Noodle Bar",
     "Shiki",
     "Shiro's Sushi",
@@ -102,6 +104,7 @@ RESTURAUNT_PAYEES = [
     "Tuktukthai Tuk",
     "Turtle Coffee Seattle Wa",
     "Uep Skybowl Cafe",
+    "Uptown Espresso",
     "Von's Spirits",
     "Von's Spirits Seattle Wa Restaurants",
     "Yoroshiku Seattle Wa",
@@ -111,6 +114,7 @@ RESTURAUNT_PAYEES = [
 SUBSCRIPTIONS = {
     "Appest Limited Wan Chai": "WebServices:TickTick",
     "Amazon Prime": "WebServices:AmazonPrime",
+    "Backblaze": "WebServices:Backblaze",
     "Du Chinese": "WebServices:DuChinese",
     "Github.com": "WebServices:Github",
     "Google Drive": "WebServices:GoogleOne",
@@ -120,7 +124,7 @@ SUBSCRIPTIONS = {
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin Bridge": "WebServices:SimpleFin",
     "Squarespace": "WebServices:Squarespace",
-    "Wasabi.com": "WebServices:Wasabi",
+    "Wasabi Technologies": "WebServices:Wasabi",
 }
 
 def getStockPrice(symbol, date):
@@ -309,6 +313,8 @@ def lookupExpense(account, transaction):
     return f"Expenses:UNKNOWN:{payee}"
 
 def lookupCategory(payee, description):
+    if payee in ["Feeding America"]:
+        return "Donations"
     if payee in ["Raygun Lounge Seattle Wa", "Shibuya"]:
         return "Entertainment:Bars"
     if payee in ["Experience Learning Commu", "Prime Video"]:
@@ -317,7 +323,7 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["Chess.com", "PlayStation", "Steam", "Valve Bellevue Wa Merchandise"]:
+    if payee in ["Chess.com", "Mcdmproductions.com", "PlayStation", "Steam", "Valve Bellevue Wa Merchandise"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
@@ -337,7 +343,7 @@ def lookupCategory(payee, description):
         return "Healthcare"
     if payee in ["Cost Plus Drugs", "Cost Plus Drugs Fl Merchandise", "Walgreens"]:
         return "Healthcare:Drugs"
-    if payee in ["The Home Depot"]:
+    if payee in ["Stoneway Hardware Ballar Seattle Wa Home Improvement", "The Home Depot"]:
         return "Home"
     if payee in ["Ikea", "Room & Board Web"]:
         return "Home:Furnishings"
@@ -363,13 +369,13 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
+    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
         return "Shopping:Electronics"
     if payee in ["Uncommon Goods"]:
         return "Shopping:Gifts"
     if payee in ["U-Haul"]:
         return "Shopping:Organizers"
-    if payee in ["Rad Power Bikes"]:
+    if payee in ["Alpine Hut", "Rad Power Bikes"]:
         return "Shopping:Sports"
     if payee in ["Paypro Europe Limited London Merchandise"]:
         return "Shopping:Virtual"
