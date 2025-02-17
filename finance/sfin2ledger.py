@@ -569,6 +569,7 @@ def getSimplefin(log_dir, access_url_file):
 def main(ledger_dir, log_dir, access_url_file):
     data = getSimplefin(log_dir, access_url_file)
     ledger = simplefin2Ledger(data)
+    perms = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
     with open(f'{ledger_dir}/{main_ledger}', 'a+') as main:
         main.seek(0)
         main_contents = main.read()
@@ -585,6 +586,8 @@ def main(ledger_dir, log_dir, access_url_file):
                     if trans_id not in file_contents:
                         file.write(transaction)
                         file_contents += transaction
+            os.chmod(f'{ledger_dir}/{ledger_name}', perms)
+    os.chmod(f'{ledger_dir}/{main_ledger}', perms)
 
     if len(data["errors"]) > 0:
         sfin_bridge_url = "https://beta-bridge.simplefin.org/auth/login"
