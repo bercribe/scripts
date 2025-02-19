@@ -13,7 +13,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from collections import defaultdict
 import json
+import os
 import re
+import stat
 import yfinance as yf
 
 BECU_CHECKING = "Assets:JointChecking:BECU"
