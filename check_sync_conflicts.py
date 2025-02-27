@@ -15,16 +15,16 @@ def find_sync_conflict_files(directory):
     
     return sync_conflict_files
 
-def compare_files_with_difftastic(file1, file2):
+def compare_files_with_difftastic(file1, file2, colors):
     # Run the 'difft' command with color output to compare the two files
     try:
         # Pass '--color=always' to ensure color output is maintained
-        result = subprocess.run(['difft', '--color=always', file1, file2], capture_output=True, text=True)
+        result = subprocess.run(['difft', f'--color={"always" if colors else "never"}', file1, file2], capture_output=True, text=True)
         return result.stdout
     except Exception as e:
         return f"Error comparing files: {e}"
 
-def main(directory):
+def main(directory, colors):
     # Find all sync-conflict files in the directory and subdirectories
     sync_conflict_files = find_sync_conflict_files(directory)
 
@@ -39,7 +39,7 @@ def main(directory):
             print(f"Comparing: {conflict_file} and {original_file}")
 
             # Compare the files and get the difftastic output
-            diff_output = compare_files_with_difftastic(conflict_file, original_file)
+            diff_output = compare_files_with_difftastic(conflict_file, original_file, colors)
 
             if diff_output:
                 print(f"Differences between {conflict_file} and {original_file}:")
@@ -56,9 +56,10 @@ if __name__ == "__main__":
     # Set up argument parsing
     parser = argparse.ArgumentParser(description="Compare sync conflict files with original files using Difftastic.")
     parser.add_argument('directory', metavar='DIR', type=str, help="Directory to scan recursively")
+    parser.add_argument('--colors', action=argparse.BooleanOptionalAction, default=True)
     
     # Parse the command-line arguments
     args = parser.parse_args()
 
     # Call the main function with the provided directory
-    main(args.directory)
+    main(args.directory, args.colors)
