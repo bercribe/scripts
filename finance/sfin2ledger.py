@@ -122,7 +122,7 @@ SUBSCRIPTIONS = {
     "Google Drive": "WebServices:GoogleOne",
     "Kagi.com": "WebServices:Kagi",
     "OpenAI": "WebServices:ChatGPT",
-    "Patreon": "Patreon:MCDM",
+    "Patreon": "Patreon",
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin Bridge": "WebServices:SimpleFin",
     "Squarespace": "WebServices:Squarespace",
@@ -411,6 +411,7 @@ def lookupCategory(payee, description):
         return "Utilities:NaturalGas"
     
     # long tail low confidence matching
+    # TODO: indicate that this was a long tail match somehow
     if matchWords(payee, "Donor"):
         return "Donations"
     if matchWords(payee, "Museum"):
