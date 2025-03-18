@@ -39,6 +39,7 @@ FIDELITY_ACCOUNTS = [FIDELITY_BROKERAGE, FIDELITY_IRA, FIDELITY_ANDURIL_401K]
 
 FIDELITY_DESCRIPTION_PATTERNS = [
     r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)",
+    r"YOU SOLD .*\((.*)\) \(Cash\)",
     r"REINVESTMENT.*\((.*)\) \(Cash\)",
 ]
 
@@ -83,6 +84,7 @@ RESTURAUNT_PAYEES = [
     "Joule Stone",
     "Kamonegi",
     "Mango for Everyone Quil Ceda Vilwa",
+    "Maripili",
     "Meet Fresh Tukwila",
     "Moontree Sushi & Tapas",
     "Pagliacci Magnolia",
@@ -126,7 +128,7 @@ SUBSCRIPTIONS = {
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin Bridge": "WebServices:SimpleFin",
     "Squarespace": "WebServices:Squarespace",
-    "Wasabi Technologies": "WebServices:Wasabi",
+    "Wasabi.com": "WebServices:Wasabi",
 }
 
 def getStockPrice(symbol, date):
@@ -239,6 +241,11 @@ def lookupIncome(account, transaction, amount):
         else:
             return "Income:Salary:Anduril"
 
+    if account in FIDELITY_ACCOUNTS:
+        symbol = getSymbol(account, transaction)
+        if symbol != None:
+            return f"{account}:{symbol}"
+
     if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll", "Anduril Industriecc"] or payee.startswith("Deposit Anduril Industri"):
         return "Income:Salary:Anduril"
     
@@ -296,13 +303,9 @@ def lookupExpense(account, transaction):
         return SEATTLE_CITY_LIGHT
 
     if account in FIDELITY_ACCOUNTS:
-        if payee == "Reinvestment Cash" or description == "REINVESTMENT FIDELITY GOVERNMENT MONEY MARKET (SPAXX) (Cash)":
-            return f"{account}:SPAXX"
-        for pattern in FIDELITY_DESCRIPTION_PATTERNS:
-            match = re.search(pattern, description)
-            if match:
-                symbol = match.group(1)
-                return f"{account}:{symbol}"
+        symbol = getSymbol(account, transaction)
+        if symbol != None:
+            return f"{account}:{symbol}"
 
     if account == SEATTLE_CITY_LIGHT:
         if payee == "Bill Amount":
@@ -363,7 +366,7 @@ def lookupCategory(payee, description):
         return "Services:PersonalCare"
     if payee in ["Mullvad"]:
         return "Services:VPN"
-    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
+    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kickstarter", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
         return "Shopping"
     if payee in ["Kindle", "Kinokuniya Bookstores"]:
         return "Shopping:Books"
@@ -371,9 +374,9 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
+    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Mouser Electronics Inc", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
         return "Shopping:Electronics"
-    if payee in ["Uncommon Goods"]:
+    if payee in ["Tjweddingregistry.com", "Uncommon Goods"]:
         return "Shopping:Gifts"
     if payee in ["U-Haul"]:
         return "Shopping:Organizers"
@@ -455,6 +458,10 @@ def getSymbol(account, transaction):
     if account == FIDELITY_ANDURIL_401K:
         return "VTTSX"
 
+    payee = transaction["payee"]
+    if payee == "Reinvestment Cash":
+        return "SPAXX"
+
     description = transaction["description"]
     for pattern in FIDELITY_DESCRIPTION_PATTERNS:
         match = re.search(pattern, description)
@@ -474,12 +481,15 @@ def checkAltPrice(account, transaction):
 
     date = datetime.fromtimestamp(transaction['posted'])
     price = getStockPrice(symbol, date)
+    # TODO: surface this error somehow
     if price == None:
         return None
 
-    amount = abs(float(transaction['amount']))
-    stock_count = amount / price
-    return f"{stock_count:.6f} {symbol} @@ {amount:.2f} USD"
+    amount = float(transaction['amount'])
+    stock_count = abs(amount) / price
+    if amount < 0:
+        return f"{stock_count:.6f} {symbol} @@ {amount:.2f} USD"
+    return f"{amount:.2f} USD @@ {stock_count:.6f} {symbol}"
 
 main_ledger = "main.ledger"
 ledger_prefix = "sfin"
