@@ -37,10 +37,11 @@ VENMO_CASH = "Assets:Cash:Venmo"
 
 FIDELITY_ACCOUNTS = [FIDELITY_BROKERAGE, FIDELITY_IRA, FIDELITY_ANDURIL_401K]
 
+FIDELITY_SALE = r"YOU SOLD .*\((.*)\) \(Cash\)"
 FIDELITY_DESCRIPTION_PATTERNS = [
     r"YOU BOUGHT PROSPECTUS UNDER SEPARATE COVER.*\((.*)\) \(Cash\)",
-    r"YOU SOLD .*\((.*)\) \(Cash\)",
     r"REINVESTMENT.*\((.*)\) \(Cash\)",
+    FIDELITY_SALE,
 ]
 
 RECREATION_PAYEES = [
@@ -144,7 +145,8 @@ def getStockPrice(symbol, date):
         return None
 
 # account is a simplefin json object
-def lookupAccount(account):
+def lookupAccount(transaction):
+    account = transaction['account']
     org_name = account["org"]["name"]
     account_name = account["name"]
     
@@ -180,9 +182,7 @@ def lookupAccount(account):
             return FIDELITY_ANDURIL_401K
     
     # these are covered by the main account
-    if org_name == "Fidelity 401k":
-        return ""
-    if org_name == "Fidelity Netbenefits (My Benefits) - Work Place Services":
+    if org_name in ["Fidelity 401k", "Fidelity Netbenefits (My Benefits) - Work Place Services", "Fidelity @ Work"]:
         return ""
         
     if org_name == "Guideline":
@@ -534,7 +534,14 @@ def simplefin2Ledger(data):
         amount = Decimal(trans['amount'])
         approx_width = 40
 
-        account_name = lookupAccount(trans['account'])
+        account_name = lookupAccount(trans)
+        ledger_account_name = account_name
+        if account_name in FIDELITY_ACCOUNTS:
+            description = trans["description"]
+            match = re.search(FIDELITY_SALE, description)
+            if match:
+                ledger_account_name += ":SPAXX"
+
         if account_name == "":
             continue
         if amount > 0:
@@ -544,11 +551,8 @@ def simplefin2Ledger(data):
                 continue
             alt_price = checkAltPrice(account_name, trans)
             amount = alt_price or '${0}'.format(abs(amount))
-            space = ' '*max(approx_width-len(account_name)-len(amount), 4)
-            entry.append('    {account_name}{space}{amount}'.format(
-                account_name=account_name,
-                space=space,
-                amount=amount))
+            space = ' '*max(approx_width-len(ledger_account_name)-len(amount), 4)
+            entry.append(f'    {ledger_account_name}{space}{amount}')
             entry.append(f'    {income_name}')
         else:
             # expense
@@ -558,11 +562,8 @@ def simplefin2Ledger(data):
             alt_price = checkAltPrice(account_name, trans)
             amount = alt_price or '${0}'.format(abs(amount))
             space = ' '*max(approx_width-len(expense_name)-len(amount), 4)
-            entry.append('    {expense_name}{space}{amount}'.format(
-                expense_name=expense_name,
-                space=space,
-                amount=amount))
-            entry.append('    {0}'.format(account_name))
+            entry.append(f'    {expense_name}{space}{amount}')
+            entry.append(f'    {ledger_account_name}')
         entry.append('')
         entry.append('')
         entries[ledger_name].append({"id": trans_id, "transaction": '\n'.join(entry)})
