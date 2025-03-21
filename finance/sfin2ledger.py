@@ -178,11 +178,11 @@ def lookupAccount(transaction):
             return FIDELITY_BROKERAGE
         if account_name == "ROTH IRA":
             return FIDELITY_IRA
+    if org_name == "Fidelity @ Work":
         if account_name == "ANDURIL INDUSTRIES":
             return FIDELITY_ANDURIL_401K
-    
-    # these are covered by the main account
-    if org_name in ["Fidelity 401k", "Fidelity Netbenefits (My Benefits) - Work Place Services", "Fidelity @ Work"]:
+    # these are covered above
+    if org_name in ["Fidelity 401k", "Fidelity Netbenefits (My Benefits) - Work Place Services"]:
         return ""
         
     if org_name == "Guideline":
