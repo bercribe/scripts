@@ -87,6 +87,7 @@ RESTURAUNT_PAYEES = [
     "Mango for Everyone Quil Ceda Vilwa",
     "Maripili",
     "Meet Fresh Tukwila",
+    "Milkvue & Diy Tea Labseattle Wa"
     "Moontree Sushi & Tapas",
     "Pagliacci Magnolia",
     "Py Delicatus Location",
@@ -123,11 +124,13 @@ SUBSCRIPTIONS = {
     "Du Chinese": "WebServices:DuChinese",
     "Github.com": "WebServices:Github",
     "Google Drive": "WebServices:GoogleOne",
+    "Hulu": "WebServices:Hulu",
     "Kagi.com": "WebServices:Kagi",
     "OpenAI": "WebServices:ChatGPT",
     "Patreon": "Patreon",
     "Raindrop Io": "WebServices:Raindrop",
     "Simplefin Bridge": "WebServices:SimpleFin",
+    "Spotify": "WebServices:Spotify",
     "Squarespace": "WebServices:Squarespace",
     "Wasabi.com": "WebServices:Wasabi",
 }
@@ -181,6 +184,7 @@ def lookupAccount(transaction):
     if org_name == "Fidelity @ Work":
         if account_name == "ANDURIL INDUSTRIES":
             return FIDELITY_ANDURIL_401K
+        return ""
     # these are covered above
     if org_name in ["Fidelity 401k", "Fidelity Netbenefits (My Benefits) - Work Place Services"]:
         return ""
@@ -318,7 +322,7 @@ def lookupExpense(account, transaction):
     return f"Expenses:UNKNOWN:{payee}"
 
 def lookupCategory(payee, description):
-    if payee in ["Feeding America"]:
+    if payee in ["Feeding America", "Washington Can", "Wmu Foundation Online"]:
         return "Donations"
     if payee in ["Raygun Lounge Seattle Wa", "Shibuya"]:
         return "Entertainment:Bars"
@@ -356,7 +360,7 @@ def lookupCategory(payee, description):
         return "Pets"
     if payee in ["Bartkowiak Accounting"]:
         return "Services:Accounting"
-    if payee in ["Fenix Roof Service", "Greenwood Heating & Ai"]:
+    if payee in ["A and R Solar Waaam Hri", "Fenix Roof Service", "Greenwood Heating & Ai"]:
         return "Services:Contractors"
     if payee in ["Hale Lands"]:
         return "Services:Gardening"
@@ -374,7 +378,7 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Mouser Electronics Inc", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
+    if payee in ["Adafruit Industries", "Core Devices", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Mouser Electronics Inc", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
         return "Shopping:Electronics"
     if payee in ["Tjweddingregistry.com", "Uncommon Goods"]:
         return "Shopping:Gifts"
@@ -402,6 +406,8 @@ def lookupCategory(payee, description):
         return "Travel:Ground"
     if payee in ["Washington Vehicle Licensing"]:
         return "Travel:License"
+    if payee in ["Courtyard by Marriott"]:
+        return "Travel:Lodging"
     if payee in ["Fluerys Collision Center", "Precision Motorworks"]:
         return "Travel:Maintenance"
     if payee in ["impark", "Metropolis", "ParkWhiz", "Paybyphone Diamond Par", "Seattle Central Community", "Sdot Paybyphone Parkin", "SpotHero"]:
