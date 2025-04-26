@@ -135,6 +135,8 @@ SUBSCRIPTIONS = {
     "Wasabi.com": "WebServices:Wasabi",
 }
 
+errors = []
+
 def getStockPrice(symbol, date):
     start_date = date.strftime("%Y-%m-%d")
     end_date = date + timedelta(days=1)
@@ -487,9 +489,10 @@ def checkAltPrice(account, transaction):
 
     date = datetime.fromtimestamp(transaction['posted'])
     price = getStockPrice(symbol, date)
-    # TODO: surface this error somehow
     if price == None:
-        print(f"Error fetching price for symbol={symbol}, transaction={transaction['id']}")
+        error = f"Error fetching price for symbol={symbol}, transaction={transaction['id']}"
+        global errors
+        errors.append(error)
         return None
 
     amount = float(transaction['amount'])
@@ -610,12 +613,12 @@ def main(ledger_dir, log_dir, access_url_file):
             os.chmod(f'{ledger_dir}/{ledger_name}', perms)
     os.chmod(f'{ledger_dir}/{main_ledger}', perms)
 
-    if len(data["errors"]) > 0:
-        raise RuntimeError(data["errors"])
+    if len(data["errors"]) > 0 or len(errors) > 0:
+        raise RuntimeError(data["errors"], errors)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-d', '--ledger_dir')
-parser.add_argument('-l', '--log_dir')
-parser.add_argument('-a', '--access_url_file')
+parser.add_argument('-d', '--ledger_dir', required=True)
+parser.add_argument('-l', '--log_dir', required=True)
+parser.add_argument('-a', '--access_url_file', required=True)
 args = parser.parse_args()
 main(args.ledger_dir, args.log_dir, args.access_url_file)
