@@ -220,6 +220,20 @@ def lookupIncome(account, transaction, amount):
     payee = transaction["payee"]
     description = transaction["description"]
 
+    income = lookupIncomeInternal(account, transaction, amount)
+    if income != "":
+        return income, ""
+
+    category = lookupLongTailCategory(payee, description)
+    if category != "":
+        return f"Income:Refund:{category}", "Long tail match"
+
+    return f"Income:UNKNOWN:{payee}", ""
+
+def lookupIncomeInternal(account, transaction, amount):
+    payee = transaction["payee"]
+    description = transaction["description"]
+
     # these will be provided by the account making the payment
     if account in [BOA_CARD, CAPITAL_ONE_CARD, CHASE_CARD, CITI_CARD, DISCOVER_CARD]:
         if payee in ["Automatic Payment", "Bank of America Electronic Payment", "Capital One Credit Card", "Credit Card Payment"]:
@@ -274,9 +288,23 @@ def lookupIncome(account, transaction, amount):
     if category != "":
         return f"Income:Refund:{category}"
 
-    return f"Income:UNKNOWN:{payee}"
+    return ""
 
 def lookupExpense(account, transaction):
+    payee = transaction["payee"]
+    description = transaction["description"]
+
+    expense = lookupExpenseInternal(account, transaction)
+    if expense != "":
+        return expense, ""
+
+    category = lookupLongTailCategory(payee, description)
+    if category != "":
+        return f"Expenses:{category}", "Long tail match"
+
+    return f"Expenses:UNKNOWN:{payee}", ""
+
+def lookupExpenseInternal(account, transaction):
     payee = transaction["payee"]
     description = transaction["description"]
 
@@ -321,7 +349,7 @@ def lookupExpense(account, transaction):
     if category != "":
         return f"Expenses:{category}"
 
-    return f"Expenses:UNKNOWN:{payee}"
+    return ""
 
 def lookupCategory(payee, description):
     if payee in ["Feeding America", "Washington Can", "Wmu Foundation Online"]:
@@ -420,9 +448,11 @@ def lookupCategory(payee, description):
         return "Utilities"
     if payee == "Puget Sound Energy":
         return "Utilities:NaturalGas"
+
+    return ""
     
-    # long tail low confidence matching
-    # TODO: indicate that this was a long tail match somehow
+# long tail low confidence matching
+def lookupLongTailCategory(payee, description):
     if matchWords(payee, "Donor"):
         return "Donations"
     if matchWords(payee, "Museum"):
@@ -556,22 +586,26 @@ def simplefin2Ledger(data):
             continue
         if amount > 0:
             # income
-            income_name = lookupIncome(account_name, trans, amount)
+            income_name, note = lookupIncome(account_name, trans, amount)
             if income_name == "":
                 continue
             alt_price = checkAltPrice(account_name, trans)
             amount = alt_price or '${0}'.format(abs(amount))
             space = ' '*max(approx_width-len(ledger_account_name)-len(amount), 4)
             entry.append(f'    {ledger_account_name}{space}{amount}')
+            if note != "" :
+                entry.append(f'    ; {note}')
             entry.append(f'    {income_name}')
         else:
             # expense
-            expense_name = lookupExpense(account_name, trans)
+            expense_name, note = lookupExpense(account_name, trans)
             if expense_name == "":
                 continue
             alt_price = checkAltPrice(account_name, trans)
             amount = alt_price or '${0}'.format(abs(amount))
             space = ' '*max(approx_width-len(expense_name)-len(amount), 4)
+            if note != "" :
+                entry.append(f'    ; {note}')
             entry.append(f'    {expense_name}{space}{amount}')
             entry.append(f'    {ledger_account_name}')
         entry.append('')
