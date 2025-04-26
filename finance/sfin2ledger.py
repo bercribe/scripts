@@ -527,8 +527,8 @@ def checkAltPrice(account, transaction):
 
     amount = float(transaction['amount'])
     stock_count = abs(amount) / price
-    if amount < 0:
-        return f"{stock_count:.6f} {symbol} @@ {-amount:.2f} USD"
+    if amount < 0 or account == FIDELITY_ANDURIL_401K:
+        return f"{stock_count:.6f} {symbol} @@ {abs(amount):.2f} USD"
     return f"{amount:.2f} USD @@ {stock_count:.6f} {symbol}"
 
 main_ledger = "main.ledger"
