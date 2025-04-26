@@ -482,19 +482,20 @@ def checkAltPrice(account, transaction):
         return None
 
     symbol = getSymbol(account, transaction)
-    if not symbol:
+    if not symbol or symbol == "SPAXX":
         return None
 
     date = datetime.fromtimestamp(transaction['posted'])
     price = getStockPrice(symbol, date)
     # TODO: surface this error somehow
     if price == None:
+        print(f"Error fetching price for symbol={symbol}, transaction={transaction['id']}")
         return None
 
     amount = float(transaction['amount'])
     stock_count = abs(amount) / price
     if amount < 0:
-        return f"{stock_count:.6f} {symbol} @@ {amount:.2f} USD"
+        return f"{stock_count:.6f} {symbol} @@ {-amount:.2f} USD"
     return f"{amount:.2f} USD @@ {stock_count:.6f} {symbol}"
 
 main_ledger = "main.ledger"
@@ -610,8 +611,7 @@ def main(ledger_dir, log_dir, access_url_file):
     os.chmod(f'{ledger_dir}/{main_ledger}', perms)
 
     if len(data["errors"]) > 0:
-        sfin_bridge_url = "https://beta-bridge.simplefin.org/auth/login"
-        raise RuntimeError(data["errors"], sfin_bridge_url)
+        raise RuntimeError(data["errors"])
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--ledger_dir')
