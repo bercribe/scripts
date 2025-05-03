@@ -7,6 +7,7 @@
     python = (pkgs.python3.withPackages (python-pkgs: with python-pkgs; [
       requests
       yfinance
+      curl-cffi
     ]));
   in {
     devShells."${system}".default = pkgs.mkShell {

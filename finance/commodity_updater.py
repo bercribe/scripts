@@ -1,6 +1,7 @@
 import argparse
 import yfinance as yf
 from datetime import datetime
+from curl_cffi import requests as curl_requests
 
 symbols = ["FNILX", "FXAIX", "ETH", "VTTSX"]
 
@@ -14,7 +15,9 @@ def get_prices(symbol):
     yf_symbol = symbol
     if symbol in yf_symbols:
         yf_symbol = yf_symbols[symbol]
-    ticker = yf.Ticker(yf_symbol)
+    # https://github.com/ranaroussi/yfinance/issues/2422
+    session = curl_requests.Session(impersonate="chrome")
+    ticker = yf.Ticker(yf_symbol, session=session)
     hist = ticker.history(period)
     return [(symbol, date, row["Close"]) for date, row in hist.iterrows()]
 

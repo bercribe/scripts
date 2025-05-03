@@ -17,6 +17,7 @@ import os
 import re
 import stat
 import yfinance as yf
+from curl_cffi import requests as curl_requests
 
 BECU_CHECKING = "Assets:JointChecking:BECU"
 BOA_CARD = "Liabilities:CreditCard:BankOfAmerica"
@@ -142,7 +143,9 @@ def getStockPrice(symbol, date):
     end_date = date + timedelta(days=1)
     end_date = end_date.strftime("%Y-%m-%d")
 
-    ticker = yf.Ticker(symbol)
+    # https://github.com/ranaroussi/yfinance/issues/2422
+    session = curl_requests.Session(impersonate="chrome")
+    ticker = yf.Ticker(symbol, session=session)
     hist = ticker.history(start=start_date, end=end_date)
     if not hist.empty:
         return hist["Close"].iloc[0]
