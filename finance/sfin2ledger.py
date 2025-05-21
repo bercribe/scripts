@@ -224,11 +224,11 @@ def lookupIncome(account, transaction, amount):
     description = transaction["description"]
 
     income = lookupIncomeInternal(account, transaction, amount)
-    if income != "":
+    if income != None:
         return income, ""
 
     category = lookupLongTailCategory(payee, description)
-    if category != "":
+    if category != None:
         return f"Income:Refund:{category}", "Long tail match"
 
     return f"Income:UNKNOWN:{payee}", ""
@@ -291,18 +291,18 @@ def lookupIncomeInternal(account, transaction, amount):
     if category != "":
         return f"Income:Refund:{category}"
 
-    return ""
+    return None
 
 def lookupExpense(account, transaction):
     payee = transaction["payee"]
     description = transaction["description"]
 
     expense = lookupExpenseInternal(account, transaction)
-    if expense != "":
+    if expense != None:
         return expense, ""
 
     category = lookupLongTailCategory(payee, description)
-    if category != "":
+    if category != None:
         return f"Expenses:{category}", "Long tail match"
 
     return f"Expenses:UNKNOWN:{payee}", ""
@@ -352,7 +352,7 @@ def lookupExpenseInternal(account, transaction):
     if category != "":
         return f"Expenses:{category}"
 
-    return ""
+    return None
 
 def lookupCategory(payee, description):
     if payee in ["Feeding America", "Washington Can", "Wmu Foundation Online"]:
@@ -487,7 +487,7 @@ def lookupLongTailCategory(payee, description):
     if matchWords(payee, "Garage", "Parking"):
         return "Travel:Parking"
     
-    return ""
+    return None
 
 def matchWords(phrase, *words):
     for word in words:
