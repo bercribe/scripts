@@ -107,6 +107,7 @@ RESTURAUNT_PAYEES = [
     "Tacos Chukis South",
     "Tacos Chukis South Laseattle Wa",
     "The Dolar Shop",
+    "Tipsy Cow Burger B Redmond Wa Aa",
     "Tock Atkamonegi",
     "Tuktukthai Tuk",
     "Turtle Coffee Seattle Wa",
@@ -315,7 +316,7 @@ def lookupExpenseInternal(account, transaction):
         return BECU_CHECKING
     if payee in ["Lamicu", "Lamicu Webxfr Onlne Transfer"]:
         return LMCU_CHECKING
-    if account not in FIDELITY_ACCOUNTS and payee == "Fidelity":
+    if account not in FIDELITY_ACCOUNTS and payee in ["Fidelity", "Fidelity Brokerage Services"]:
         return FIDELITY_BROKERAGE
     if payee == "Bank of America Credit Card":
         return BOA_CARD
@@ -365,11 +366,11 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["Chess.com", "Mcdmproductions.com", "PlayStation", "Steam", "Valve Bellevue Wa Merchandise"]:
+    if payee in ["Chess.com", "Mcdmproductions.com", "Nintendo", "PlayStation", "Steam", "Valve Bellevue Wa Merchandise"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
-    if payee in ["Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
+    if payee in ["AXS", "Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
         return "Entertainment:Shows"
     if payee in ["Handmadesea"]:
         return "Events:Tickets"
@@ -405,6 +406,8 @@ def lookupCategory(payee, description):
         return "Services:VPN"
     if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kickstarter", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
         return "Shopping"
+    if payee in ["Slate"]:
+        return "Shopping:Automotive"
     if payee in ["Kindle", "Kinokuniya Bookstores"]:
         return "Shopping:Books"
     if payee in ["Abercrombie & Fitch", "Calvin Klein", "Express", "Skechers", "Ted Baker", "Under Armour", "UNIQLO"]:
@@ -420,7 +423,7 @@ def lookupCategory(payee, description):
     if payee in ["Alpine Hut", "Rad Power Bikes"]:
         return "Shopping:Sports"
     if payee in ["Paypro Europe Limited London Merchandise"]:
-        return "Shopping:Virtual"
+        return "Shopping:Digital"
     if payee in ["T-Mobile"]:
         return "Subscriptions:CellService"
     if payee in ["CenturyLink", "Centurylink Lumen"]:
