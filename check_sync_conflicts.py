@@ -27,6 +27,10 @@ def compare_files_with_difftastic(file1, file2, colors):
 def main(directory, colors):
     # Find all sync-conflict files in the directory and subdirectories
     sync_conflict_files = find_sync_conflict_files(directory)
+    print("Conflicts:")
+    for file in sync_conflict_files:
+        print(f"  {file}")
+    print()
 
     # Iterate over each sync-conflict file
     for conflict_file in sync_conflict_files:
