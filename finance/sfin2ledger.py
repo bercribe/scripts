@@ -596,7 +596,7 @@ def simplefin2Ledger(data):
             if income_name == "":
                 continue
             alt_price = checkAltPrice(account_name, trans)
-            amount = alt_price or '${0}'.format(abs(amount))
+            amount = alt_price or '{0} USD'.format(abs(amount))
             space = ' '*max(approx_width-len(ledger_account_name)-len(amount), 4)
             entry.append(f'    {ledger_account_name}{space}{amount}')
             if note != "" :
@@ -608,7 +608,7 @@ def simplefin2Ledger(data):
             if expense_name == "":
                 continue
             alt_price = checkAltPrice(account_name, trans)
-            amount = alt_price or '${0}'.format(abs(amount))
+            amount = alt_price or '{0} USD'.format(abs(amount))
             space = ' '*max(approx_width-len(expense_name)-len(amount), 4)
             if note != "" :
                 entry.append(f'    ; {note}')
