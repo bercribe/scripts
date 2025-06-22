@@ -272,7 +272,7 @@ def lookupIncomeInternal(account, transaction, amount):
             return f"{account}:{symbol}"
     else
         if payee == "Fidelity Brokerage Services":
-            return FIDELITY_BROKERAGE
+            return f"{FIDELITY_BROKERAGE}:SPAXX"
 
     if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll", "Anduril Industriecc"] or payee.startswith("Deposit Anduril Industri"):
         return "Income:Salary:Anduril"
