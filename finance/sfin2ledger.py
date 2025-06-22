@@ -79,6 +79,7 @@ RESTURAUNT_PAYEES = [
     "Eggspectation",
     "Fort St George",
     "Happy Lemon University",
+    "Heytea South Lake Union",
     "Hokkaido Ramen Santouseattle Wa",
     "Hummingbird Sushi",
     "Island Girl Seafood",
@@ -269,6 +270,9 @@ def lookupIncomeInternal(account, transaction, amount):
         symbol = getSymbol(account, transaction)
         if symbol != None:
             return f"{account}:{symbol}"
+    else
+        if payee == "Fidelity Brokerage Services":
+            return FIDELITY_BROKERAGE
 
     if payee in ["Anduril Industri", "Deposit Anduril Industri Payroll", "Anduril Industriecc"] or payee.startswith("Deposit Anduril Industri"):
         return "Income:Salary:Anduril"
@@ -344,6 +348,8 @@ def lookupExpenseInternal(account, transaction):
         symbol = getSymbol(account, transaction)
         if symbol != None:
             return f"{account}:{symbol}"
+        if payee == "Electronic Funds Transfer Paid":
+            return ""
 
     if account == SEATTLE_CITY_LIGHT:
         if payee == "Bill Amount":
@@ -366,17 +372,17 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["Chess.com", "Mcdmproductions.com", "Nintendo", "PlayStation", "Steam", "Valve Bellevue Wa Merchandise"]:
+    if payee in ["Chess.com", "Mcdmproductions.com", "Nintendo", "PlayStation", "Steam", "Valve"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
-    if payee in ["AXS", "Jazzalley.com", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Tock Atshibuya"]:
+    if payee in ["AXS", "Jazzalley.com", "Showare Center Box Off", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Ticketweb", "Tock Atshibuya"]:
         return "Entertainment:Shows"
     if payee in ["Handmadesea"]:
         return "Events:Tickets"
     if payee in ["Deposit ATM Refund", "Foreign Transaction Fee", "International Service Fee"]:
         return "Fees"
-    if payee in ["Asian Family Market Se", "Ballard", "Costco", "Girl Scouts", "Instacart via Instacart", "Kiki Bakery Seattle Wa", "PCC Community Markets", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
+    if payee in ["Asian Family Market Se", "Ballard", "Collins Family Orchard", "Costco", "Girl Scouts", "Instacart via Instacart", "Kiki Bakery Seattle Wa", "PCC Community Markets", "Trader Joe's", "Quality Food Centers", "Uwajimaya", "Whole Foods"]:
         return "Food:Groceries"
     if payee in RESTURAUNT_PAYEES:
         return "Food:Resturaunts"
@@ -394,7 +400,7 @@ def lookupCategory(payee, description):
         return "Pets"
     if payee in ["Bartkowiak Accounting"]:
         return "Services:Accounting"
-    if payee in ["A and R Solar Waaam Hri", "Fenix Roof Service", "Greenwood Heating & Ai"]:
+    if payee in ["A and R Solar Sale Co Name Matoska Waltz", "Fenix Roof Service", "Greenwood Heating & Ai"]:
         return "Services:Contractors"
     if payee in ["Hale Lands"]:
         return "Services:Gardening"
@@ -402,7 +408,7 @@ def lookupCategory(payee, description):
         return "Services:Insurance"
     if payee in ["Matoska Waltz Paid Sports Haircut"]:
         return "Services:PersonalCare"
-    if payee in ["Mullvad"]:
+    if payee in ["Mullvad Vpn"]:
         return "Services:VPN"
     if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kickstarter", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
         return "Shopping"
@@ -432,7 +438,7 @@ def lookupCategory(payee, description):
         return "Subscriptions:WebServices:HeyEmail"
     if payee in SUBSCRIPTIONS.keys():
         return f"Subscriptions:{SUBSCRIPTIONS[payee]}"
-    if payee in ["Delta Airlines"]:
+    if payee in ["American Airlines", "Delta Airlines"]:
         return "Travel:Air"
     if payee in ["Orca Travel Entertainment", "Orca Wagoogle Pay Travel Entertainment", "Washington State Ferries"]:
         return "Travel:Fares"
