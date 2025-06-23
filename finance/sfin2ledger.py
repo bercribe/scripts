@@ -270,7 +270,7 @@ def lookupIncomeInternal(account, transaction, amount):
         symbol = getSymbol(account, transaction)
         if symbol != None:
             return f"{account}:{symbol}"
-    else
+    else:
         if payee == "Fidelity Brokerage Services":
             return f"{FIDELITY_BROKERAGE}:SPAXX"
 
