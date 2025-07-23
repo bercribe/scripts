@@ -92,6 +92,7 @@ RESTURAUNT_PAYEES = [
     "Milkvue & Diy Tea Labseattle Wa"
     "Moontree Sushi & Tapas",
     "Pagliacci Magnolia",
+    "Potbelly",
     "Py Delicatus Location",
     "Qdoba",
     "Raretea Kirkland Kirkland Wa",
@@ -116,6 +117,7 @@ RESTURAUNT_PAYEES = [
     "Uptown Espresso",
     "Von's Spirits",
     "Von's Spirits Seattle Wa Restaurants",
+    "Wow Bao",
     "Yoroshiku Seattle Wa",
     "Zhuge Grill Fish",
 ]
@@ -188,6 +190,8 @@ def lookupAccount(transaction):
             return FIDELITY_BROKERAGE
         if account_name == "ROTH IRA":
             return FIDELITY_IRA
+        if account_name == "ANDURIL INDUSTRIES":
+            return ""
     if org_name == "Fidelity @ Work":
         if account_name == "ANDURIL INDUSTRIES":
             return FIDELITY_ANDURIL_401K
@@ -372,11 +376,11 @@ def lookupCategory(payee, description):
         return "Entertainment:Classes"
     if payee == "Humble Bundle":
         return "Entertainment:Digital"
-    if payee in ["Chess.com", "Mcdmproductions.com", "Nintendo", "PlayStation", "Steam", "Valve"]:
+    if payee in ["Chess.com", "Mcdmproductions.com", "Nintendo", "PlayStation", "Square Enix", "Steam", "Valve"]:
         return "Entertainment:Games"
     if payee in RECREATION_PAYEES:
         return "Entertainment:Recreation"
-    if payee in ["AXS", "Jazzalley.com", "Showare Center Box Off", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Ticketweb", "Tock Atshibuya"]:
+    if payee in ["Accesso Showare Center", "AXS", "Jazzalley.com", "Showare Center", "Showare Center Box Off", "StubHub!", "The Paramount Theatr", "Ticketmaster", "Ticketweb", "Tock Atshibuya"]:
         return "Entertainment:Shows"
     if payee in ["Handmadesea"]:
         return "Events:Tickets"
@@ -410,7 +414,7 @@ def lookupCategory(payee, description):
         return "Services:PersonalCare"
     if payee in ["Mullvad Vpn"]:
         return "Services:VPN"
-    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kickstarter", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
+    if payee in ["Alipay", "Alipay Beijing Cny", "Amazon", "Amazon Market", "Backerkit.com", "City Super Limited Tsimshatsui", "Dbrand", "eBay", "Etsy", "Fireworks Gallery", "Goodwill", "Kickstarter", "Nayax", "Kurzgesagt", "Meh.com", "Merchandise", "PayPal Payments and Transfers", "Stuhlbergs"]:
         return "Shopping"
     if payee in ["Slate"]:
         return "Shopping:Automotive"
@@ -420,7 +424,7 @@ def lookupCategory(payee, description):
         return "Shopping:Clothing"
     if payee in ["Michaels"]:
         return "Shopping:Crafts"
-    if payee in ["Adafruit Industries", "Core Devices", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Mouser Electronics Inc", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa"]:
+    if payee in ["Adafruit Industries", "Core Devices", "Dell Mkt", "Keycawc", "Kobo", "Lenovocorpo", "Mouser Electronics Inc", "Newegg", "Serverpartdeals", "This Week Pi Shop Inc", "Xidikejdcpa", "Yangfan"]:
         return "Shopping:Electronics"
     if payee in ["Tjweddingregistry.com", "Uncommon Goods"]:
         return "Shopping:Gifts"
@@ -448,7 +452,7 @@ def lookupCategory(payee, description):
         return "Travel:Ground"
     if payee in ["Washington Vehicle Licensing"]:
         return "Travel:License"
-    if payee in ["Courtyard by Marriott"]:
+    if payee in ["Courtyard by Marriott", "La Quinta Bannockburn De"]:
         return "Travel:Lodging"
     if payee in ["Fluerys Collision Center", "Precision Motorworks"]:
         return "Travel:Maintenance"
