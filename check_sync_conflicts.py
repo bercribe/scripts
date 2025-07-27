@@ -62,6 +62,8 @@ def main(directory, colors):
 
     if len(sync_conflict_files) > 0:
         raise RuntimeError("sync conflicts found!")
+    else:
+        print("No conflicts!")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compare sync conflict files with original files using Difftastic.")
